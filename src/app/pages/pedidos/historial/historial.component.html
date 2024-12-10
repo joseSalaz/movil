@@ -1,0 +1,44 @@
+<!-- historial-pedidos.component.html -->
+<app-header></app-header>
+<div class="historial-container">
+    <h2 class="heading">Historial de Pedidos</h2>
+  
+    <div class="filter-actions">
+      <button class="filter-button">Pedidos</button>
+      <button class="filter-button">Registrar</button>
+    </div>
+  
+    <input type="text" class="search-bar" placeholder="Search...">
+  
+    <table class="pedido-table">
+      <thead>
+        <tr>
+          <th class="column-header">Ver</th>
+          <th class="column-header">Estado</th>
+          <th class="column-header">Fecha</th>
+          <th class="column-header">Nro Pedido</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><button class="ver-button">Ver</button></td>
+          <td class="estado entregado">Entregado</td>
+          <td>Jul 28, 2024</td>
+          <td>Bol0123</td>
+        </tr>
+        <tr>
+          <td><button class="ver-button">Ver</button></td>
+          <td class="estado empaquetado">Empaquetado</td>
+          <td>Ene 15, 2024</td>
+          <td>Bol0122</td>
+        </tr>
+        <tr>
+          <td><button class="ver-button">Ver</button></td>
+          <td class="estado en-proceso">En Proceso</td>
+          <td>Abr 05, 2024</td>
+          <td>Bol0121</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

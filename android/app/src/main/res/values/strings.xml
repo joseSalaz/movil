@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">lib-movil</string>
+    <string name="title_activity_main">lib-movil</string>
+    <string name="package_name">com.lib.dev</string>
+    <string name="custom_url_scheme">com.lib.dev</string>
+</resources>
