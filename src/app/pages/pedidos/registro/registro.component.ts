@@ -1,62 +1,92 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { App } from '@capacitor/app';
-
-
+import { VentaService } from '../../../service/venta.service';
 
 @Component({
   selector: 'app-registro',
   templateUrl: './registro.component.html',
-  styleUrl: './registro.component.css'
+  styleUrls: ['./registro.component.css'],
 })
-export class RegistroComponent implements OnInit, OnDestroy {
+export class RegistroComponent implements OnInit {
+  idDetalleVenta!: number;
+  estado: string = 'En Proceso';
+  descripcion: string = '';
+  imagePreview: string | undefined;
 
-  private backButtonListener: any;
-
-  constructor(private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private ventaService: VentaService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
-    // Escucha el evento de retroceso
-    this.backButtonListener = App.addListener('backButton', () => {
-      this.handleBackButton();
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam && !isNaN(+idParam)) {
+      this.idDetalleVenta = +idParam;
+      this.cargarEstadoActual();
+    } else {
+      console.error('ID inválido o no encontrado. Redirigiendo a historial...');
+      this.router.navigate(['/historial']); // Redirige a historial
+    }
+  }  
+  
+  async takePhoto() {
+    const photo = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Camera,
+    });
+    this.imagePreview = photo.dataUrl;
+  }
+
+  cargarEstadoActual() {
+    this.ventaService.getDetalleById(this.idDetalleVenta).subscribe((data) => {
+      this.estado = data.estado;
     });
   }
 
-  ngOnDestroy() {
-    // Limpia el listener para evitar fugas de memoria
-    if (this.backButtonListener) {
-      this.backButtonListener.remove();
-    }
+ 
+
+  obtenerSiguienteEstado(estadoActual: string): string {
+    if (estadoActual === 'En Proceso') return 'Empaquetado';
+    if (estadoActual === 'Empaquetado') return 'Entregado';
+    return 'Entregado';
   }
-
-  handleBackButton() {
-    // Navega a la página anterior o cierra la app
-    if (this.router.url === '/registro') {
-      this.router.navigate(['/inicio']); // Cambia a la ruta anterior
-    } else {
-      App.exitApp(); // Si no hay más páginas, cierra la aplicación
-    }
-  }
-
-  estado: string = 'En Proceso';
-    // Variable para almacenar la imagen capturada
-    imagePreview: string | undefined;
-
-    // Función para abrir la cámara y capturar la imagen
-    async takePhoto() {
-      try {
-        const photo = await Camera.getPhoto({
-          quality: 90,
-          allowEditing: false,
-          resultType: CameraResultType.DataUrl, // Devuelve la imagen como base64 (DataUrl)
-          source: CameraSource.Camera // Usamos la cámara para capturar la foto
+  guardarEvidencia() {
+    const nuevoEstado = this.obtenerSiguienteEstado(this.estado);
+  
+    // Crear el FormData
+    const formData = new FormData();
+    formData.append('IdEstadoPedidoImagen', '0'); // Nuevo registro, valor inicial
+    formData.append('IdEstadoPedido', this.idDetalleVenta.toString());
+    formData.append('UrlImagen', ''); // La URL se llenará en el backend
+    formData.append('Estado', nuevoEstado);
+    formData.append('Fecha', new Date().toISOString());
+  
+    // Adjuntar el archivo directo (sin convertir a base64)
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+  
+    fileInput.onchange = () => {
+      if (fileInput.files && fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        formData.append('images', file); // Clave "images" como espera el backend
+  
+        // Enviar la solicitud al backend
+        this.ventaService.crearEstadoPedidoImagen(formData).subscribe({
+          next: () => {
+            console.log('Evidencia guardada correctamente.');
+            this.router.navigate(['/historial']);
+          },
+          error: (err:any) => console.error('Error al guardar evidencia:', err),
         });
-        
-        // Asignamos la imagen capturada a la variable de previsualización
-        this.imagePreview = photo.dataUrl;
-      } catch (error) {
-        console.error("Error tomando la foto: ", error);
       }
-    }
+    };
+  
+    fileInput.click(); // Abre el selector de archivos
+  }
+
 }

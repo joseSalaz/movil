@@ -1,77 +1,59 @@
-/* historial-pedidos.component.scss */
+/* historial.component.css */
 .historial-container {
-    padding: 1rem;
-  }
-  
-  .heading {
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-  }
-  
-  .filter-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-  }
-  
-  .filter-button {
-    background-color: #e5e7eb;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.3s;
-  
-    &:hover {
-      background-color: #d1d5db;
-    }
-  }
-  
-  .search-bar {
-    width: 100%;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  .pedido-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .column-header {
-    text-align: center;
-    padding: 0.75rem;
-    background-color: #f3f4f6;
-    font-weight: bold;
-  }
-  
-  .estado {
-    text-align: center;
-    padding: 0.5rem;
-  }
-  
-  .entregado {
-    background-color: #86efac;
-  }
-  
-  .empaquetado {
-    background-color: #fbbf24;
-  }
-  
-  .en-proceso {
-    background-color: #f87171;
-  }
-  
-  .ver-button {
-    background-color: #3b82f6;
-    color: white;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.5rem;
-    font-weight: bold;
-    cursor: pointer;
-  
-    &:hover {
-      background-color: #2563eb;
-    }
-  }
-  
+  max-width: 900px;
+  margin: auto;
+}
+
+.heading {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 20px;
+}
+
+.pedido-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pedido-table th,
+.pedido-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.ver-button {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.estado {
+  font-weight: bold;
+}
+
+.estado.entregado {
+  color: green;
+}
+
+.estado.empaquetado {
+  color: orange;
+}
+
+.estado.en-proceso {
+  color: blue;
+}

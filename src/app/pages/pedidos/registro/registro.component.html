@@ -1,51 +1,50 @@
-<div class="p-4">
-    <h1 class="text-2xl font-bold text-center mb-4">Registrar Pedido</h1>
-    
-    <!-- Pestañas de navegación -->
-    <div class="flex justify-around mb-4">
-        <button class="text-lg font-semibold text-gray-500">Pedidos</button>
-        <button class="text-lg font-semibold text-gray-500 text-blue-500">Registrar</button>
+<div class="registro-container p-4 space-y-4">
+    <h2 class="text-xl font-bold text-center text-gray-800">Agregar Evidencia</h2>
+  
+    <!-- Estado Actual -->
+    <div class="bg-gray-100 p-2 rounded-md">
+      <label class="block text-gray-600">Estado Actual</label>
+      <p class="text-gray-800 font-semibold">{{ estado }}</p>
     </div>
-
-    <!-- Formulario de Registro -->
-    <div class="flex flex-col space-y-4">
-        <div>
-            <label class="block text-gray-700">Evidencia</label>
-            
-            <!-- Contenedor para la previsualización de la imagen -->
-            <div class="w-full h-48 bg-gray-200 flex justify-center items-center mb-4">
-                <!-- Imagen previsualizada -->
-                <div *ngIf="imagePreview" class="w-full h-full flex justify-center items-center">
-                    <img [src]="imagePreview" alt="Previsualización de la imagen" class="w-full h-full object-contain rounded-md">
-                </div>
-                <!-- Mensaje cuando no hay imagen previsualizada -->
-                <p *ngIf="!imagePreview" class="text-gray-500">Imagen de evidencia</p>
-            </div>
-
-            <!-- Botón para tomar foto -->
-            <button (click)="takePhoto()" class="mt-2 bg-green-500 text-white p-2 rounded-full">
-                <i class="fas fa-camera"></i> Tomar Foto
-            </button>
-        </div>
-
-        <div class="flex justify-between items-center">
-            <label class="text-gray-700">Estado</label>
-            <select [(ngModel)]="estado" class="p-2 border border-gray-300 rounded">
-                <option value="En Proceso" class="text-red-500">En Proceso</option>
-                <option value="Entregado" class="text-green-500">Entregado</option>
-                <option value="Empaquetado" class="text-yellow-500">Empaquetado</option>
-            </select>
-        </div>
-
-        <div class="mt-4">
-            <label class="block text-gray-700">Descripción del Estado</label>
-            <textarea class="w-full p-2 border border-gray-300 rounded" rows="4" placeholder="Ingrese descripción del estado"></textarea>
-        </div>
-
-        <div class="flex justify-center">
-            <button class="bg-green-500 text-white p-3 rounded-lg mt-4">
-                Registrar Pedido
-            </button>
-        </div>
+  
+    <!-- Imagen de Evidencia -->
+    <div
+      class="w-full h-48 bg-gray-200 flex items-center justify-center rounded-md overflow-hidden"
+    >
+      <img
+        *ngIf="imagePreview"
+        [src]="imagePreview"
+        alt="Evidencia"
+        class="w-full h-full object-contain"
+      />
+      <p *ngIf="!imagePreview" class="text-gray-500">No hay imagen seleccionada</p>
     </div>
-</div>
+  
+    <!-- Botón para Tomar Foto -->
+    <button
+      (click)="takePhoto()"
+      class="w-full bg-blue-500 text-white py-2 rounded-md shadow-md hover:bg-blue-600 transition"
+    >
+      Tomar Foto
+    </button>
+  
+    <!-- Descripción -->
+    <div>
+      <label class="block text-gray-600 mb-1">Descripción</label>
+      <textarea
+        [(ngModel)]="descripcion"
+        class="w-full p-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+        rows="3"
+        placeholder="Escribe una descripción..."
+      ></textarea>
+    </div>
+  
+    <!-- Botón para Guardar -->
+    <button
+      (click)="guardarEvidencia()"
+      class="w-full bg-green-500 text-white py-2 rounded-md shadow-md hover:bg-green-600 transition"
+    >
+      Guardar
+    </button>
+  </div>
+  

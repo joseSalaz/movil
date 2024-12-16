@@ -1,0 +1,23 @@
+<div class="detalle-venta-container p-4 space-y-4">
+    <h2 class="text-xl font-bold text-center text-gray-800">Detalles de la Venta</h2>
+  
+    <div
+      *ngFor="let detalle of detallesVenta"
+      class="flex flex-col bg-gray-50 p-4 rounded-lg shadow-md"
+    >
+      <div class="flex justify-between mb-2">
+        <span class="font-semibold text-gray-600">Producto:</span>
+        <span class="text-gray-800">{{ detalle.nombreProducto }}</span>
+      </div>
+      <div class="flex justify-between mb-2">
+        <span class="font-semibold text-gray-600">Estado:</span>
+        <span class="text-blue-600">{{ detalle.estado }}</span>
+      </div>
+      <button
+  (click)="agregarEvidencia(detalle.idDetalleVentas)"
+  class="bg-blue-500 text-white py-2 rounded-md mt-2 hover:bg-blue-600 transition">
+  Agregar Evidencia
+</button>
+    </div>
+  </div>
+  
