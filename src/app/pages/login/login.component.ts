@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../service/auth.service';
 
 import { Router } from '@angular/router';
@@ -10,12 +10,21 @@ import { AuthResponse } from '../../models/Auth';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']  // Asegúrate de usar 'styleUrls'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit{
   loginData: LoginData = { username: '', password: '' };  // Usamos LoginData para las credenciales
   errorMessage: string | null = null;
 
-  constructor(private authService: AuthService, private router: Router) {}
-
+  constructor(private authService: AuthService, private router: Router) {
+    if (this.authService.getToken()) {
+      this.router.navigate(['/inicio']); // Redirige automáticamente si el usuario ya está autenticado
+    }
+  }
+  
+  ngOnInit() {
+    if (this.authService.getToken()) {
+      this.router.navigate(['/inicio']);
+    }
+  }
   login() {
     debugger;
     this.authService.login(this.loginData.username, this.loginData.password).subscribe(
