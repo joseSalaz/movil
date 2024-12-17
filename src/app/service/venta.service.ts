@@ -49,4 +49,12 @@ export class VentaService {
   actualizarEstadoPedido(idVenta: number, formData: FormData) {
     return this.http.put(`${this.apiUrl}DetalleVenta/UpdateEstadoPedidos/${idVenta}`, formData);
   }
+  validarImagenLibro(formData: FormData) {
+    return this.http.post<any>(
+      `${this.apiUrl}Libro/detalles-imagen`, 
+      formData
+    );
+  }
+  
+  
 }
