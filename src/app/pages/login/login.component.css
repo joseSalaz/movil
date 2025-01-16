@@ -1,0 +1,84 @@
+/* General Settings */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: 'Arial', sans-serif;
+  background-color: #f7f7f7;
+}
+
+/* Bubble Styles */
+.bubble {
+  position: absolute;
+  opacity: 0.5;
+  z-index: 0;
+}
+
+.bubble-top-left {
+  width: 30vw;
+  height: 30vw;
+  top: -10%;
+  left: -10%;
+}
+
+.bubble-center {
+  width: 40vw;
+  height: 40vw;
+  top: 30%;
+  left: 25%;
+}
+
+.bubble-bottom-right {
+  width: 50vw;
+  height: 50vw;
+  bottom: -20%;
+  right: -15%;
+}
+
+/* Form Styles */
+form {
+  margin: 0 auto;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  border: none;
+}
+
+input,
+button {
+  border: none;
+  box-shadow: none;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .bubble-top-left,
+  .bubble-center,
+  .bubble-bottom-right {
+    width: 40vw;
+    height: 40vw;
+  }
+
+  form {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .bubble-top-left,
+  .bubble-center,
+  .bubble-bottom-right {
+    width: 50vw;
+    height: 50vw;
+  }
+
+  form {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 1.25rem;
+  }
+}

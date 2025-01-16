@@ -1,17 +1,25 @@
-<div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-  <form class="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg space-y-6" (ngSubmit)="login()">
-    <h1 class="text-2xl font-bold text-center text-gray-800">Bienvenido</h1>
-    <p class="text-center text-gray-500 mb-6">Librería Saber App</p>
-    
+<div class="relative flex items-center justify-center min-h-screen w-screen bg-gray-100 overflow-hidden">
+  <!-- Background Bubbles -->
+  <div class="absolute bg-gray-300 rounded-full bubble bubble-top-left"></div>
+  <div class="absolute bg-gray-300 rounded-full bubble bubble-center"></div>
+  <div class="absolute bg-gray-300 rounded-full bubble bubble-bottom-right"></div>
+
+  <!-- Login Section -->
+  <form
+    class="w-full h-full px-6 space-y-6 z-10 flex flex-col justify-center"
+    (ngSubmit)="login()"
+  >
+    <h1 class="text-2xl font-bold text-center text-gray-800">Inicié Sesión</h1>
+
     <div>
-      <label for="username" class="block text-sm font-medium text-gray-600 mb-2">Usuario</label>
+      <label for="email" class="block text-sm font-medium text-gray-600 mb-2">Correo Electrónico</label>
       <input
         type="text"
-        id="username"
+        id="email"
         [(ngModel)]="loginData.username"
         name="username"
-        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        placeholder="Ingresa tu usuario"
+        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+        placeholder="Correo Electrónico"
         required
       />
     </div>
@@ -23,8 +31,8 @@
         id="password"
         [(ngModel)]="loginData.password"
         name="password"
-        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        placeholder="Ingresa tu contraseña"
+        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+        placeholder="Contraseña"
         required
       />
     </div>
@@ -35,9 +43,9 @@
 
     <button
       type="submit"
-      class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all"
+      class="w-full bg-black text-white py-3 rounded-md font-semibold hover:bg-gray-800 transition-all"
     >
-      Iniciar Sesión
+      SIGUIENTE
     </button>
   </form>
 </div>

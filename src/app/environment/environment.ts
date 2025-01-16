@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    endPoint: 'https://api20241209222530.azurewebsites.net/',
+    endPoint: 'https://api20250116150338.azurewebsites.net/',
   };
