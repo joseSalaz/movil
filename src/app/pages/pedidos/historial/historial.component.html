@@ -1,9 +1,17 @@
 <app-header></app-header>
 
 <div class="historial-container">
-  <h2 class="heading">Historial de Pedidos</h2>
-  <input type="text" class="search-bar" placeholder="Buscar...">
-  <table class="pedido-table">
+  <h2 class="font-comfortaa text-center text-gray-600">Historial de Pedidos</h2>
+
+  <div class="filter-actions ">
+    <div class="tab-container font-roboto">
+      <button class="tab active ">Pedidos</button>
+      <button class="tab">Registrar</button>
+    </div>
+    <input type="text" class="search-bar" placeholder="Buscar...">
+  </div>
+
+  <table class="pedido-table font-roboto text-gray-600">
     <thead>
       <tr>
         <th>Ver</th>
@@ -12,17 +20,28 @@
         <th>Nro Pedido</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody class="font-roboto">
       <tr *ngFor="let venta of ventas">
         <td>
           <button (click)="verDetalle(venta.idVentas)" class="ver-button">Ver</button>
         </td>
-        <td class="estado">{{ venta.detalle_venta?.[0]?.estado || 'Sin Estado' }}</td>
-        <td>{{ venta.fechaVenta | date: 'MMM dd, yyyy' }}</td>
+        <td>
+          <span [ngClass]="{
+              'estado-entregado': venta.detalle_venta?.[0]?.estado === 'Entregado',
+              'estado-empaquetado': venta.detalle_venta?.[0]?.estado === 'Empaquetado',
+              'estado-en-proceso': venta.detalle_venta?.[0]?.estado === 'En Proceso'
+            }">
+            {{ venta.detalle_venta?.[0]?.estado || 'Sin Estado' }}
+          </span>
+        </td>
+        <td>
+          {{ venta.fechaVenta | date: 'MMM dd,' }}
+          <br />
+          {{ venta.fechaVenta | date: 'yyyy' }}
+        </td>
         <td>{{ venta.nroComprobante }}</td>
         <td>{{venta.idVentas}}</td>
       </tr>
     </tbody>
   </table>
-  
 </div>

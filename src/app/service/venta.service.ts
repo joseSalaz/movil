@@ -10,8 +10,8 @@ import { environment } from '../environment/environment';
   providedIn: 'root',
 })
 export class VentaService {
-
   private apiUrl = 'https://api20250116150338.azurewebsites.net/';
+
 
   constructor(private http: HttpClient) {}
 

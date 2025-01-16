@@ -3,7 +3,12 @@ module.exports = {
     "./src/**/*.{html,ts}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        roboto: ['Roboto', 'sans-serif'],
+        comfortaa: ['"Comfortaa"', 'sans-serif'], // Fuente login
+      },
+    },
   },
   plugins: [
     require('daisyui'),
