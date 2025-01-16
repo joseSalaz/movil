@@ -20,6 +20,7 @@
         <td class="estado">{{ venta.detalle_venta?.[0]?.estado || 'Sin Estado' }}</td>
         <td>{{ venta.fechaVenta | date: 'MMM dd, yyyy' }}</td>
         <td>{{ venta.nroComprobante }}</td>
+        <td>{{venta.idVentas}}</td>
       </tr>
     </tbody>
   </table>

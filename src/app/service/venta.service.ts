@@ -10,7 +10,8 @@ import { environment } from '../environment/environment';
   providedIn: 'root',
 })
 export class VentaService {
-  private apiUrl = 'https://api20241209222530.azurewebsites.net/';
+
+  private apiUrl = 'https://api20250116150338.azurewebsites.net/';
 
   constructor(private http: HttpClient) {}
 
@@ -24,6 +25,11 @@ export class VentaService {
       },
     });
   }
+
+    // Obtener detalles de una venta
+    getVentaDetallesid(idDetalleVenta: number) {
+      return this.http.get<any>(`${environment.endPoint}DetalleVenta/${idDetalleVenta}`);
+    }
 
   // Obtener detalles de una venta
   getVentaDetalles(idVenta: number) {
@@ -40,15 +46,29 @@ export class VentaService {
     return this.http.get<any>(`${this.apiUrl}api/EstadoPedido/${idDetalleVenta}`);
   }
 
-  // Crear estado del pedido con imágenes (nueva URL)
-  crearEstadoPedidoImagen(formData: FormData) {
+  crearEstadoPedidoImagen(formData: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}api/EstadoPedidoImagene/create-with-images`, formData);
   }
 
-  // Actualizar estado del pedido
-  actualizarEstadoPedido(idVenta: number, formData: FormData) {
-    return this.http.put(`${this.apiUrl}DetalleVenta/UpdateEstadoPedidos/${idVenta}`, formData);
+  // Nuevo método para enviar un array de imágenes
+  async crearEstadoPedidoImagenMultiples(idEstadoPedido: number, imagenes: File[]): Promise<any> {
+    const formData = new FormData();
+    formData.append('IdEstadoPedido', idEstadoPedido.toString());
+    formData.append('Estado', ''); // O agrega el estado deseado
+    formData.append('Fecha', new Date().toISOString());
+
+    for (const imagen of imagenes) {
+      formData.append('images', imagen);
+    }
+
+    return await this.http.post(`${this.apiUrl}api/EstadoPedidoImagene/create-with-images`, formData).toPromise();
   }
+
+  // Actualizar estado del pedido
+  actualizarEstadoPedidoConImagenes(id: number, formData: FormData): Observable<string> {
+    return this.http.put<string>(`https://api20250116150338.azurewebsites.net/DetalleVenta/UpdateEstadoPedidos/${id}`, formData, { responseType: 'text' as 'json' });
+  }
+  
   validarImagenLibro(formData: FormData) {
     return this.http.post<any>(
       `${this.apiUrl}Libro/detalles-imagen`, 
@@ -56,5 +76,5 @@ export class VentaService {
     );
   }
   
-  
+
 }

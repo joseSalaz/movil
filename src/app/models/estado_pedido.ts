@@ -6,3 +6,5 @@ export interface EstadoPedido {
     fechaEstado: Date;
     estadoPedidoImagene?: EstadoPedidoImagene[]
   }
+
+  

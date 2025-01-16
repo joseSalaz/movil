@@ -6,5 +6,6 @@ export interface DetalleVenta {
     precioUnit:number;
     cantidad:number;
     estado?: string;
+    idVentas:number;
     detallePedido?:EstadoPedido[];
   }

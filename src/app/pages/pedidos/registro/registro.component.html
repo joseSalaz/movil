@@ -1,51 +1,56 @@
-<div class="registro-container p-4 space-y-4">
-    <h2 class="text-xl font-bold text-center text-gray-800">Agregar Evidencia</h2>
-  
-    <!-- Estado Actual -->
-    <div class="bg-gray-100 p-2 rounded-md">
-      <label class="block text-gray-600">Estado Actual</label>
-      <p class="text-gray-800 font-semibold">{{ estado }}</p>
-    </div>
-    <div *ngIf="isLoading" class="spinner-overlay">
-      <div class="spinner"></div>
-    </div>
-    <!-- Imagen de Evidencia -->
-    <div
-      class="w-full h-48 bg-gray-200 flex items-center justify-center rounded-md overflow-hidden"
-    >
-      <img
-        *ngIf="imagePreview"
-        [src]="imagePreview"
-        alt="Evidencia"
-        class="w-full h-full object-contain"
-      />
-      <p *ngIf="!imagePreview" class="text-gray-500">No hay imagen seleccionada</p>
-    </div>
-  
-    <!-- Botón para Tomar Foto -->
-    <button
-      (click)="takePhoto()"
-      class="w-full bg-blue-500 text-white py-2 rounded-md shadow-md hover:bg-blue-600 transition"
-    >
-      Tomar Foto
-    </button>
-  
-    <!-- Descripción -->
-    <div>
-      <label class="block text-gray-600 mb-1">Descripción</label>
-      <textarea
-        [(ngModel)]="descripcion"
-        class="w-full p-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-        rows="3"
-        placeholder="Escribe una descripción..."
-      ></textarea>
-    </div>
-  
-    <button
-    (click)="guardarEvidencia()"
-    [disabled]="!isImageValid"
-    class="w-full bg-green-500 text-white py-2 rounded-md shadow-md hover:bg-green-600 transition">
-    Guardar
-  </button>
+<div class="registro-container p-4 space-y-4 max-w-md mx-auto">
+  <h2 class="text-xl font-bold text-center text-gray-800 mb-4">Agregar Evidencia</h2>
+
+  <div class="bg-gray-100 p-2 rounded-md">
+    <label class="block text-gray-600">Estado Actual</label>
+    <p class="text-gray-800 font-semibold">{{ estado }}</p>
+  </div>
+
+  <div class="flex flex-col space-y-2">
+    <label for="fecha" class="block text-gray-600 mb-1">Fecha</label>
+    <input type="date" (change)="onDateChange($event)" />
   </div>
   
+  <div>
+    <label for="nuevoEstado" class="block text-gray-600 mb-1">Nuevo Estado</label>
+    <select 
+      [(ngModel)]="selectedEstado" 
+      name="nuevoEstado" 
+      id="nuevoEstado" 
+      class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300 text-lg"
+    >
+      <option *ngFor="let estado of estados" [ngValue]="estado">{{ estado }}</option>
+    </select>
+  </div>
+  
+
+  <div *ngIf="isLoading" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+    <div *ngFor="let preview of imagePreviews; let i = index" class="relative">  <img [src]="preview" alt="Imagen {{ i + 1 }}" class="w-full h-48 object-cover rounded-md">
+      <div *ngIf="areImagesValid[i] === false" class="absolute inset-0 bg-red-500 bg-opacity-75 flex items-center justify-center rounded-md">
+        <span class="text-white font-bold text-lg">Imagen no válida</span>
+      </div>
+      <button (click)="eliminarImagen(i)" class="absolute top-2 right-2 bg-gray-800 bg-opacity-75 text-white rounded-full p-2 hover:bg-red-600 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <button (click)="takePhoto()" class="w-full bg-blue-500 text-white py-3 rounded-md shadow-md hover:bg-blue-600 transition text-lg font-medium">
+    Tomar Foto
+  </button>
+
+  <div>
+    <label class="block text-gray-600 mb-1">Descripción</label>
+    <textarea [(ngModel)]="descripcion" class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300 text-lg" rows="3" placeholder="Escribe una descripción..."></textarea>
+  </div>
+
+  <button (click)="guardarEvidencia()" [disabled]="!allImagesValid || images.length === 0 || isLoading" class="w-full bg-green-500 text-white py-3 rounded-md shadow-md hover:bg-green-600 transition text-lg font-medium">
+    Guardar
+  </button>
+</div>
