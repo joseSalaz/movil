@@ -1,49 +1,55 @@
+
 <div class="relative flex items-center justify-center min-h-screen w-screen bg-gray-100 overflow-hidden">
   <!-- Background Bubbles -->
-  <div class="absolute bg-gray-300 rounded-full bubble bubble-top-left"></div>
-  <div class="absolute bg-gray-300 rounded-full bubble bubble-center"></div>
-  <div class="absolute bg-gray-300 rounded-full bubble bubble-bottom-right"></div>
+  <div class="relative bg-gray-300 rounded-full bubble bubble-top-left"></div>
+  <div class="relative bg-gray-300 rounded-full bubble bubble-center"></div>
+  <div class="relative bg-gray-300 rounded-full bubble bubble-bottom-right"></div>
 
   <!-- Login Section -->
+  <ngx-spinner bdColor="rgba(0, 0, 0, 0.5)" size="medium" color="#fff" type="ball-clip-rotate">
+    <p style="color: white">Cargando...</p>
+  </ngx-spinner>
+  
+
   <form
-    class="w-full h-full px-6 space-y-6 z-10 flex flex-col justify-center"
+    class="h-screen w-full flex flex-col justify-start items-center px-6 space-y-8 pt-12 z-10"
     (ngSubmit)="login()"
   >
-    <h1 class="text-2xl font-bold text-center text-gray-800">Inicié Sesión</h1>
+    <h1 class="font-comfortaa text-center text-gray-800 text-3xl">Inicié Sesión</h1>
 
-    <div>
-      <label for="email" class="block text-sm font-medium text-gray-600 mb-2">Correo Electrónico</label>
+    <div class="w-full max-w-sm">
+      <label for="email" class="block text-sm font-medium text-gray-600 mb-2 ">Correo Electrónico</label>
       <input
         type="text"
         id="email"
         [(ngModel)]="loginData.username"
         name="username"
-        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+        class="font-roboto w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
         placeholder="Correo Electrónico"
         required
       />
     </div>
 
-    <div>
-      <label for="password" class="block text-sm font-medium text-gray-600 mb-2">Contraseña</label>
+    <div class="w-full max-w-sm">
+      <label for="password" class="block text-sm font-medium text-gray-600 mb-2 ">Contraseña</label>
       <input
         type="password"
         id="password"
         [(ngModel)]="loginData.password"
         name="password"
-        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+        class="font-roboto w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
         placeholder="Contraseña"
         required
       />
     </div>
 
-    <div *ngIf="errorMessage" class="text-red-500 text-sm font-medium text-center">
+    <div *ngIf="errorMessage" class="text-red-500 text-sm font-medium text-center w-full max-w-sm">
       {{ errorMessage }}
     </div>
 
     <button
       type="submit"
-      class="w-full bg-black text-white py-3 rounded-md font-semibold hover:bg-gray-800 transition-all"
+      class="w-full max-w-sm bg-black text-white py-3 rounded-md font-semibold hover:bg-gray-800 transition-all"
     >
       SIGUIENTE
     </button>

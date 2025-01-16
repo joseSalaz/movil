@@ -12,6 +12,8 @@ import { LoginComponent } from './pages/login/login.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DetalleVentaComponent } from './pages/pedidos/detalle-venta/detalle-venta.component';
 
+import { LoadingComponent } from './pages/loading/loading.component';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
   declarations: [
@@ -22,12 +24,15 @@ import { DetalleVentaComponent } from './pages/pedidos/detalle-venta/detalle-ven
     RegistroComponent,
     LoginComponent,
     DetalleVentaComponent,
+    InicioComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule 
+    HttpClientModule,
+    NgxSpinnerModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -87,7 +87,7 @@ validarImagen(file: File) {
       }
     },
     error: (err) => {
-      this.isLoading = false; // Desactiva el spinner
+      this.isLoading = false; 
       console.error('Error al validar imagen:', err);
       alert('Ocurrió un error al validar la imagen. Verifica el archivo.');
     },

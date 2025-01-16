@@ -4,6 +4,7 @@ import { AuthService } from '../../service/auth.service';
 import { Router } from '@angular/router';
 import { LoginData } from '../../models/LoginData';
 import { AuthResponse } from '../../models/Auth';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-login',
@@ -11,10 +12,12 @@ import { AuthResponse } from '../../models/Auth';
   styleUrls: ['./login.component.css']  // Asegúrate de usar 'styleUrls'
 })
 export class LoginComponent implements OnInit{
-  loginData: LoginData = { username: '', password: '' };  // Usamos LoginData para las credenciales
+  loginData: LoginData = { username: '', password: '' };
   errorMessage: string | null = null;
-
-  constructor(private authService: AuthService, private router: Router) {
+  notificationMessage: string | null = null;
+  notificationSuccess: boolean = true;
+  isLoading: boolean = false; // Estado de carga
+  constructor(private authService: AuthService, private router: Router, private spinner: NgxSpinnerService) {
     if (this.authService.getToken()) {
       this.router.navigate(['/inicio']); // Redirige automáticamente si el usuario ya está autenticado
     }
@@ -26,22 +29,19 @@ export class LoginComponent implements OnInit{
     }
   }
   login() {
-    debugger;
+    this.spinner.show();
+    
     this.authService.login(this.loginData.username, this.loginData.password).subscribe(
-      (response: AuthResponse) => {  // Especifica que la respuesta es de tipo AuthResponse
+      (response) => {
+        this.spinner.hide();
         if (response.success) {
-          // Guardar el token en localStorage
-          this.authService.saveToken(response.token);
-          alert('Login exitoso');
-          this.router.navigate(['/inicio']);  // Redirigir al inicio
-        } else {
-          this.errorMessage = 'Credenciales inválidas.';
+          this.router.navigate(['/inicio']);
         }
       },
       (error) => {
-        console.error(error);
-        this.errorMessage = 'Ocurrió un error al iniciar sesión.';
+        this.spinner.hide();
+        console.error('Error:', error);
       }
     );
-  }
+  } 
 }
