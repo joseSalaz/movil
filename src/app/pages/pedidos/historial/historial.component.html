@@ -27,12 +27,12 @@
         </td>
         <td>
           <span [ngClass]="{
-              'estado-entregado': venta.detalle_venta?.[0]?.estado === 'Entregado',
-              'estado-empaquetado': venta.detalle_venta?.[0]?.estado === 'Empaquetado',
-              'estado-en-proceso': venta.detalle_venta?.[0]?.estado === 'En Proceso'
-            }">
-            {{ venta.detalle_venta?.[0]?.estado || 'Sin Estado' }}
-          </span>
+            'estado-reservado': venta.estadoPedido === 'Reservado',
+            'estado-empaquetado': venta.estadoPedido === 'Empaquetado',
+            'estado-en-proceso': venta.estadoPedido === 'En Proceso'
+          }">
+            {{ venta.estadoPedido || 'Sin Estado' }}
+          </span>    
         </td>
         <td>
           {{ venta.fechaVenta | date: 'MMM dd,' }}
@@ -40,8 +40,8 @@
           {{ venta.fechaVenta | date: 'yyyy' }}
         </td>
         <td>{{ venta.nroComprobante }}</td>
-        <td>{{venta.idVentas}}</td>
+        <td>{{ venta.idVentas }}</td>
       </tr>
-    </tbody>
+    </tbody>    
   </table>
 </div>

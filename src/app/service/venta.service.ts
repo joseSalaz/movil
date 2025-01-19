@@ -11,7 +11,7 @@ import { EstadoPedido } from '../models/estado_pedido';
   providedIn: 'root',
 })
 export class VentaService {
-  private apiUrl = 'https://api20250116150338.azurewebsites.net/';
+  private apiUrl = 'http://localhost:5229/';
 
 
   constructor(private http: HttpClient) {}
@@ -80,5 +80,11 @@ export class VentaService {
   
   getEstadoPedido(idDetalleVenta: number): Observable<EstadoPedido> {
     return this.http.get<EstadoPedido>(`${this.apiUrl}DetalleVenta/GetEstadoPedido/${idDetalleVenta}`);
+  }
+  getEstadoPedidoByVenta(idVenta: number): Observable<EstadoPedido[]> {
+    return this.http.get<EstadoPedido[]>(`${this.apiUrl}DetalleVenta/GetEstadoPedido/${idVenta}`);
+  }  
+  getVentaConDetallesYEstado(idVenta: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}Venta/GetVentaConDetallesYEstado/${idVenta}`);
   }
 }

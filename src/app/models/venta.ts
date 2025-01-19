@@ -6,4 +6,5 @@ export interface Venta {
     fechaVenta:Date;
     detalle_venta?:DetalleVenta[];
     nroComprobante: string;
+    estadoPedido?: string;
   }
