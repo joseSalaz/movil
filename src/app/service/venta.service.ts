@@ -1,10 +1,11 @@
 // services/venta.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { VentaResponse } from '../models/ventaResponse';
 import { DetalleVenta } from '../models/detalle_venta';
 import { environment } from '../environment/environment';
+import { EstadoPedido } from '../models/estado_pedido';
 
 @Injectable({
   providedIn: 'root',
@@ -66,7 +67,8 @@ export class VentaService {
 
   // Actualizar estado del pedido
   actualizarEstadoPedidoConImagenes(id: number, formData: FormData): Observable<string> {
-    return this.http.put<string>(`https://api20250116150338.azurewebsites.net/DetalleVenta/UpdateEstadoPedidos/${id}`, formData, { responseType: 'text' as 'json' });
+    debugger
+    return this.http.put<string>(`${this.apiUrl}DetalleVenta/UpdateEstadoPedidos/${id}`, formData, { responseType: 'text' as 'json' });
   }
   
   validarImagenLibro(formData: FormData) {
@@ -76,5 +78,7 @@ export class VentaService {
     );
   }
   
-
+  getEstadoPedido(idDetalleVenta: number): Observable<EstadoPedido> {
+    return this.http.get<EstadoPedido>(`${this.apiUrl}DetalleVenta/GetEstadoPedido/${idDetalleVenta}`);
+  }
 }

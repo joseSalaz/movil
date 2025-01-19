@@ -7,15 +7,13 @@ import { HeaderComponent } from './pages/header/header.component';
 import { InicioComponent } from './pages/inicio/inicio.component';
 import { HistorialComponent } from './pages/pedidos/historial/historial.component';
 import { RegistroComponent } from './pages/pedidos/registro/registro.component';
-import { FormsModule } from '@angular/forms';
 import { LoginComponent } from './pages/login/login.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DetalleVentaComponent } from './pages/pedidos/detalle-venta/detalle-venta.component';
 
 import { LoadingComponent } from './pages/loading/loading.component';
 import { NgxSpinnerModule } from 'ngx-spinner';
-import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -26,11 +24,7 @@ import { CommonModule } from '@angular/common';
     RegistroComponent,
     LoginComponent,
     DetalleVentaComponent,
-    InicioComponent,
     LoadingComponent,
-    HeaderComponent,
-    CommonModule,
-    FormsModule
   ],
   imports: [
     BrowserModule,
@@ -38,9 +32,9 @@ import { CommonModule } from '@angular/common';
     FormsModule,
     HttpClientModule,
     NgxSpinnerModule,
-    RouterModule
+    ReactiveFormsModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
