@@ -38,8 +38,12 @@ export class DetalleVentaComponent implements OnInit {
     });
   }
 
-  agregarEvidencia(idDetalleVenta: number) {
-    this.router.navigate(['/registro', idDetalleVenta]);
+  agregarEvidencia() {
+    if (this.detallesVenta.length > 0) {
+      const primerIdDetalleVenta = this.detallesVenta[0].idDetalleVentas; 
+      this.router.navigate(['/registro', primerIdDetalleVenta]);
+    } else {
+      console.warn('No hay detalles de venta disponibles.');
+    }
   }
-  
 }
