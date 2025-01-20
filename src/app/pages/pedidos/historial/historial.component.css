@@ -89,12 +89,12 @@
   font-weight: bold;
 }
 
-.estado-entregado {
-  background-color: #28a745;
+.estado-empaquetado {
+  background-color: #830e66;
   color: white;
 }
 
-.estado-empaquetado {
+.estado-pedido-aceptado {
   background-color: #ffc107;
   color: black;
 }
@@ -103,6 +103,12 @@
   background-color: #dc3545;
   color: white;
 }
+.estado-dejado-en-curier
+{
+  background-color: #28a745;
+  color: black;
+}
+
 
 /* Form Styles */
 input {

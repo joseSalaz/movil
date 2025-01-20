@@ -31,7 +31,7 @@ export class PushNotificationService {
 
     await PushNotifications.register();
 
-    await PushNotifications.addListener('registration', (token) => {
+    await PushNotifications.addListener('registration', (token:any) => {
       console.log('Token de notificación push: ' + token.value);
       this.sendTokenToBackend(token.value, 1);
     });
