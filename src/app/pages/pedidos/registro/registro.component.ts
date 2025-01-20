@@ -25,7 +25,8 @@ export class RegistroComponent implements OnInit {
   imagenesActuales: EstadoPedidoImagene[] = [];
   selectedEstado: string = '';
   fecha: Date = new Date(); 
-
+  notificationMessage: string | null = null;
+  notificationSuccess: boolean = true;
   constructor(
     private route: ActivatedRoute,
     private ventaService: VentaService,
@@ -46,6 +47,13 @@ export class RegistroComponent implements OnInit {
       console.error('ID inválido o no encontrado. Redirigiendo a historial...');
       this.router.navigate(['/historial']);
     }
+  }
+  private showNotification(message: string, success: boolean) {
+    this.notificationMessage = message;
+    this.notificationSuccess = success;
+    setTimeout(() => {
+      this.notificationMessage = null;
+    }, 4000); // Tiempo para desaparecer la notificación
   }
   private async inicializarDatos() {
     try {
@@ -119,19 +127,21 @@ private async validarImagen(file: File): Promise<void> {
       );
 
       if (!bookTag) {
-          throw new Error('La imagen no parece ser un libro o no tiene suficiente claridad.');
+        throw new Error('La imagen no parece ser un libro o no tiene suficiente claridad.');
       }
-  } catch (error) {
+      this.showNotification('Imagen validada con éxito.', true);
+    } catch (error) {
       console.error('Error en la validación de la imagen:', error);
-      throw new Error('Error al validar la imagen. Por favor, intenta nuevamente.');
+      this.showNotification('La imagen no parece ser un libro o no tiene suficiente claridad.', false);
+      throw error;
+    }
   }
-}
 
   async obtenerIdEstadoPedido() {
     try {
       this.isLoading = true;
       const response = await firstValueFrom(this.ventaService.getEstadoPedido(this.idDetalleVenta));
-      this.idEstadoPedido = response.idEstadoPedido; // Ahora esto debería funcionar
+      this.idEstadoPedido = response.idEstadoPedido;
       console.log('idEstadoPedido obtenido:', this.idEstadoPedido);
     } catch (error) {
       console.error('Error al obtener idEstadoPedido:', error);
@@ -193,87 +203,61 @@ private async validarImagen(file: File): Promise<void> {
     }
   }
   
-  
-  private formatDateToYYYYMMDD(date: Date): string {
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;  // Usar formato año-mes-día
-  }
   async guardarEvidencia() {
     if (this.images.length === 0) {
-        alert('Debes tomar al menos una foto antes de guardar.');
-        return;
+      this.showNotification('Debes tomar al menos una foto antes de guardar.', false);
+      return;
     }
 
     if (!this.areImagesValid.every(isValid => isValid)) {
-        alert('Algunas imágenes no han sido validadas correctamente. Por favor, verifica las imágenes.');
-        return;
+      this.showNotification('Algunas imágenes no han sido validadas correctamente.', false);
+      return;
     }
 
     if (!(this.fecha instanceof Date) || isNaN(this.fecha.getTime())) {
-        console.error('Fecha no válida:', this.fecha);
-        alert('La fecha seleccionada no es válida. Por favor, verifica la entrada.');
-        return;
+      this.showNotification('La fecha seleccionada no es válida.', false);
+      return;
     }
 
     if (this.idVentas === null) {
-        console.error('ID de venta no disponible.');
-        alert('El ID de venta no está disponible. Recargue la página.');
-        return;
+      this.showNotification('El ID de venta no está disponible. Recargue la página.', false);
+      return;
     }
 
     try {
-        this.isLoading = true;
-        const formData = new FormData();
-        
-        // Datos básicos
-        formData.append('IdVenta', this.idVentas.toString());
-        formData.append('Estado', this.nuevoEstado);
-        formData.append('IdDetalleVentas', this.idDetalleVenta.toString());
-        formData.append('IdEstadoPedido', this.idEstadoPedido.toString());
-        formData.append('FechaEstado', this.fecha.toISOString()); // Enviar fecha en formato ISO
-        formData.append('Comentario', this.descripcion);
+      this.isLoading = true;
+      const formData = new FormData();
+      formData.append('IdVenta', this.idVentas.toString());
+      formData.append('Estado', this.nuevoEstado);
+      formData.append('IdDetalleVentas', this.idDetalleVenta.toString());
+      formData.append('IdEstadoPedido', this.idEstadoPedido.toString());
+      formData.append('FechaEstado', this.fecha.toISOString());
+      formData.append('Comentario', this.descripcion);
 
-        // Agregar imágenes validadas
-        for (let i = 0; i < this.images.length; i++) {
-            formData.append('images', this.images[i]);
-        }
+      for (let i = 0; i < this.images.length; i++) {
+        formData.append('images', this.images[i]);
+      }
 
-        console.log("Contenido del FormData:");
-        formData.forEach((value, key) => {
-            if (value instanceof File) {
-                console.log(key, value.name, value.size);
-            } else {
-                console.log(key, value);
-            }
-        });
-
-        const response = await firstValueFrom(
-            this.ventaService.actualizarEstadoPedidoConImagenes(this.idVentas, formData)
-        );
-
-        console.log('Respuesta del servidor:', response);
-        this.router.navigate(['/historial']);
-        alert('Se agregó correctamente');
+      const response = await firstValueFrom(this.ventaService.actualizarEstadoPedidoConImagenes(this.idVentas, formData));
+      console.log('Respuesta del servidor:', response);
+      this.router.navigate(['/historial']);
+      this.showNotification('Se agregó correctamente.', true);
     } catch (error: any) {
-        console.error('Error al actualizar:', error);
-        let errorMessage = 'Ocurrió un error al actualizar: \n';
-        if (error?.error?.errors) {
-            Object.entries(error.error.errors).forEach(([key, value]) => {
-                errorMessage += `${key}: ${value}\n`;
-            });
-        } else if (error?.error?.message) {
-            errorMessage = error.error.message;
-        } else if (error?.message) {
-            errorMessage = error.message;
-        } else {
-            errorMessage = 'Error desconocido. Contacte al administrador.';
-        }
-        alert(errorMessage);
+      console.error('Error al actualizar:', error);
+      let errorMessage = 'Ocurrió un error al actualizar: \n';
+      if (error?.error?.errors) {
+        Object.entries(error.error.errors).forEach(([key, value]) => {
+          errorMessage += `${key}: ${value}\n`;
+        });
+      } else if (error?.error?.message) {
+        errorMessage = error.error.message;
+      } else {
+        errorMessage = 'Error desconocido. Contacte al administrador.';
+      }
+      this.showNotification(errorMessage, false);
     } finally {
-        this.isLoading = false;
-        this.changeDetector.detectChanges();
+      this.isLoading = false;
+      this.changeDetector.detectChanges();
     }
   }
   onDateChange(event: Event): void {

@@ -18,6 +18,7 @@ import { environment } from './environment/environment';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { SharedModule } from './pages/shared/shared.module';
 
 
 @NgModule({
@@ -38,6 +39,7 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
     HttpClientModule,
     NgxSpinnerModule,
     ReactiveFormsModule,
+    SharedModule
   ],
   providers: [
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
