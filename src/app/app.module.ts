@@ -18,12 +18,8 @@ import { environment } from './environment/environment';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-<<<<<<< HEAD
 import { PermisosComponent } from './pages/notification/permisos/permisos.component';
-
-=======
 import { SharedModule } from './pages/shared/shared.module';
->>>>>>> 3984bb7487e429325a200fe28bbee7aca69b6ca0
 
 
 @NgModule({

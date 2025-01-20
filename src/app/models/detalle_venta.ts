@@ -8,4 +8,5 @@ export interface DetalleVenta {
     estado?: string;
     idVentas:number;
     detallePedido?:EstadoPedido[];
+    idLibro: number;
   }

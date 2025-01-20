@@ -1,17 +1,25 @@
 <div class="detalle-venta-container p-4 space-y-4">
   <h2 class="text-xl font-bold text-center text-gray-800">Detalles de la Venta</h2>
 
+  <div *ngIf="loading" class="text-center">Cargando...</div>
+
   <div
-    *ngFor="let detalle of detallesVenta"
-    class="flex flex-col bg-gray-50 p-4 rounded-lg shadow-md"
+    *ngFor="let detalleConLibro of detallesVentaConLibro"
+    class="flex flex-col bg-gray-50 p-4 rounded-lg shadow-md space-y-4"
   >
+    <!-- Imagen del libro -->
+    <div *ngIf="detalleConLibro.libro?.imagen" class="flex justify-center">
+      <img [src]="detalleConLibro.libro?.imagen" alt="Imagen del Libro" class="h-32 w-auto object-contain rounded-md">
+    </div>
+
+    <!-- Información del producto -->
     <div class="flex justify-between mb-2">
       <span class="font-semibold text-gray-600">Producto:</span>
-      <span class="text-gray-800">{{ detalle.nombreProducto }}</span>
+      <span class="text-gray-800">{{ detalleConLibro.detalle.nombreProducto }}</span>
     </div>
     <div class="flex justify-between mb-2">
       <span class="font-semibold text-gray-600">Estado:</span>
-      <span class="text-blue-600">{{ detalle.estado }}</span>
+      <span class="text-blue-600">{{ detalleConLibro.detalle.estado }}</span>
     </div>
   </div>
 
