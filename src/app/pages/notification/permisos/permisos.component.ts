@@ -7,14 +7,21 @@ import { PushNotificationService } from '../../../service/push-notificacion.serv
   styleUrl: './permisos.component.css'
 })
 export class PermisosComponent {
-  constructor(private pushNotificationService: PushNotificationService) {}
+  constructor(private pushService: PushNotificationService) {}
 
-  async solicitarPermisos() {
-    const permisoConcedido = await this.pushNotificationService.requestNotificationPermission();
-    if (permisoConcedido) {
-      console.log('El usuario aceptó las notificaciones');
-    } else {
-      console.log('El usuario rechazó las notificaciones');
+  async ngOnInit() {
+    const initialized = await this.pushService.initialize();
+    
+    if (initialized) {
+      // Suscribirse a cambios en el token
+      this.pushService.token$.subscribe(token => {
+        console.log('Token recibido:', token);
+      });
+
+      // Suscribirse a mensajes
+      this.pushService.message$.subscribe(message => {
+        console.log('Mensaje recibido:', message);
+      });
     }
   }
 }
