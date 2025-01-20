@@ -20,7 +20,6 @@ export class AuthService {
     return this.http.post<AuthResponse>(this.apiUrl, payload).pipe(
       tap(response => {
         if (response && response.token) {
-          console.log('Token recibido:', response.token);
           this.saveToken(response.token); // Guarda el token en localStorage
         }
       })

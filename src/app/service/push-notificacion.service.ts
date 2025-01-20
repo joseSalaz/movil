@@ -1,137 +1,98 @@
 import { Injectable } from '@angular/core';
 import { PushNotifications } from '@capacitor/push-notifications';
-import { getMessaging, onMessage } from 'firebase/messaging';
 import { Capacitor } from '@capacitor/core';
+import { BehaviorSubject, catchError, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PushNotificationService {
-  private messaging = getMessaging();
-  private currentToken: string | null = null;
+  private tokenSubject = new BehaviorSubject<string | null>(null);
+  private messageSubject = new BehaviorSubject<any>(null);
+  
+  public readonly token$: Observable<string | null> = this.tokenSubject.asObservable();
+  public readonly message$ = this.messageSubject.asObservable();
 
-  constructor() {}
+  constructor(
+    private http: HttpClient
+  ) {}
 
-  async requestNotificationPermission(): Promise<boolean> {
+  async initialize(): Promise<boolean> {
+    if (!Capacitor.isNativePlatform()) {
+      console.log('No estamos en un entorno nativo');
+      return false;
+    }
+
     try {
-      // Verificar si estamos en Android
-      const platform = Capacitor.getPlatform();
+      // Verificar y solicitar permisos
+      const permStatus = await PushNotifications.checkPermissions();
       
-      if (platform === 'android') {
-        // En Android 13+ (SDK 33+), necesitamos solicitar el permiso explícitamente
-        try {
-          const result = await PushNotifications.requestPermissions();
-          if (result.receive === 'granted') {
-            await this.initializePushNotifications();
-            return true;
-          } else {
-            console.log('Permiso denegado por el usuario');
-            return false;
-          }
-        } catch (err) {
-          console.error('Error al solicitar permisos:', err);
-          return false;
-        }
-      } else {
-        // Para versiones anteriores de Android o iOS
-        let permStatus = await PushNotifications.checkPermissions();
-        
-        if (permStatus.receive === 'prompt') {
-          permStatus = await PushNotifications.requestPermissions();
-        }
-
-        if (permStatus.receive === 'granted') {
-          await this.initializePushNotifications();
-          return true;
-        } else {
+      if (permStatus.receive === 'prompt' || permStatus.receive === 'denied') {
+        const request = await PushNotifications.requestPermissions();
+        if (request.receive !== 'granted') {
+          console.log('Permisos denegados');
           return false;
         }
       }
+
+      // Registrar para notificaciones
+      await PushNotifications.register();
+      
+      // Configurar listeners
+      this.setupListeners();
+      
+      return true;
     } catch (error) {
-      console.error('Error general al solicitar permisos:', error);
+      console.error('Error al inicializar notificaciones:', error);
       return false;
     }
   }
 
-  private async initializePushNotifications() {
-    try {
-      await PushNotifications.register();
-      await this.registerPushListeners();
-    } catch (error) {
-      console.error('Error al inicializar notificaciones:', error);
-      throw error;
-    }
-  }
-
-  private async registerPushListeners() {
-    // Remover listeners existentes para evitar duplicados
+  private setupListeners(): void {
+    // Limpiar listeners anteriores
     PushNotifications.removeAllListeners();
-    
-<<<<<<< HEAD
-    // Listener para el token
-    PushNotifications.addListener('registration', async (token) => {
-      console.log('Token FCM recibido:', token.value);
-      this.currentToken = token.value;
-      await this.sendTokenToBackend(token.value, 2);
-=======
-    if (permStatus.receive === 'prompt') {
-      permStatus = await PushNotifications.requestPermissions();
-    }
 
-    if (permStatus.receive !== 'granted') {
-      console.log('Permiso no otorgado para notificaciones push');
-      return;
-    }
-
-    await PushNotifications.register();
-
-    await PushNotifications.addListener('registration', (token:any) => {
-      console.log('Token de notificación push: ' + token.value);
-      this.sendTokenToBackend(token.value, 1);
->>>>>>> 3984bb7487e429325a200fe28bbee7aca69b6ca0
+    // Token registration
+    PushNotifications.addListener('registration', (token) => {
+      console.log('Token FCM:', token.value);
+      this.tokenSubject.next(token.value);
+      this.sendTokenToBackend(token.value,2);
+      alert("este es el "+token.value)
     });
 
-    // Listener para errores de registro
+    // Registration error
     PushNotifications.addListener('registrationError', (error) => {
-      console.error('Error en registro FCM:', error);
+      console.error('Error al registrar FCM:', error);
+      this.tokenSubject.next(null);
     });
 
-    // Listener para notificaciones recibidas (app en primer plano)
+    // Recepción de notificación
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
       console.log('Notificación recibida:', notification);
+      this.messageSubject.next(notification);
     });
 
-    // Listener para cuando se toca la notificación
-    PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-      console.log('Notificación tocada:', notification);
+    // Acción sobre notificación
+    PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
+      console.log('Acción realizada:', action);
+      this.messageSubject.next(action);
     });
   }
 
-  private async sendTokenToBackend(token: string, userId: number) {
-    try {
-      const response = await fetch(
-        'https://api20250116150338.azurewebsites.net/api/notification/register-token',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            usuarioId: userId, 
-            token: token 
-          })
-        }
-      );
+  sendTokenToBackend(token: string, userId: number): Observable<any> {
+    const payload = { usuarioId: userId, token: token };
+    alert("enviando al back"+token)
+    return this.http.post<any>(`https://api20250116150338.azurewebsites.net/api/notification/register-token`, payload).pipe(
+      catchError((error) => {
+        console.error('Error al enviar el token:', error);
+        throw error;
+      })
+    );
+  }
 
-      if (!response.ok) {
-        throw new Error(`Error HTTP: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('Token registrado exitosamente:', data);
-
-    } catch (error) {
-      console.error('Error al registrar token en backend:', error);
-    }
+  // Método público para obtener el token actual
+  getCurrentToken(): string | null {
+    return this.tokenSubject.getValue();
   }
 }
