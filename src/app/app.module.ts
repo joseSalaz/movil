@@ -18,6 +18,8 @@ import { environment } from './environment/environment';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { PermisosComponent } from './pages/notification/permisos/permisos.component';
+
 
 
 @NgModule({
@@ -30,6 +32,8 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
     LoginComponent,
     DetalleVentaComponent,
     LoadingComponent,
+    PermisosComponent
+    
   ],
   imports: [
     BrowserModule,
