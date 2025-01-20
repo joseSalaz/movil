@@ -67,11 +67,28 @@ export class PushNotificationService {
     // Remover listeners existentes para evitar duplicados
     PushNotifications.removeAllListeners();
     
+<<<<<<< HEAD
     // Listener para el token
     PushNotifications.addListener('registration', async (token) => {
       console.log('Token FCM recibido:', token.value);
       this.currentToken = token.value;
       await this.sendTokenToBackend(token.value, 2);
+=======
+    if (permStatus.receive === 'prompt') {
+      permStatus = await PushNotifications.requestPermissions();
+    }
+
+    if (permStatus.receive !== 'granted') {
+      console.log('Permiso no otorgado para notificaciones push');
+      return;
+    }
+
+    await PushNotifications.register();
+
+    await PushNotifications.addListener('registration', (token:any) => {
+      console.log('Token de notificación push: ' + token.value);
+      this.sendTokenToBackend(token.value, 1);
+>>>>>>> 3984bb7487e429325a200fe28bbee7aca69b6ca0
     });
 
     // Listener para errores de registro

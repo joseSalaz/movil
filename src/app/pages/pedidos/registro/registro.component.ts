@@ -24,9 +24,9 @@ export class RegistroComponent implements OnInit {
   nuevoEstado: string = '';
   imagenesActuales: EstadoPedidoImagene[] = [];
   selectedEstado: string = '';
-  estados: string[] = ['En Proceso', 'Empaquetado', 'Entregado'];
-  fecha: Date = new Date();
-
+  fecha: Date = new Date(); 
+  notificationMessage: string | null = null;
+  notificationSuccess: boolean = true;
   constructor(
     private route: ActivatedRoute,
     private ventaService: VentaService,
@@ -48,9 +48,17 @@ export class RegistroComponent implements OnInit {
       this.router.navigate(['/historial']);
     }
   }
+  private showNotification(message: string, success: boolean) {
+    this.notificationMessage = message;
+    this.notificationSuccess = success;
+    setTimeout(() => {
+      this.notificationMessage = null;
+    }, 4000); // Tiempo para desaparecer la notificación
+  }
   private async inicializarDatos() {
     try {
       this.isLoading = true;
+      this.fecha = new Date(); 
       await this.obtenerIdVentas();
       await this.obtenerIdEstadoPedido();
       await this.cargarEstadoActual();
@@ -64,40 +72,46 @@ export class RegistroComponent implements OnInit {
   }
   async takePhoto() {
     try {
-      const photo = await Camera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Camera,
-      });
+        const photo = await Camera.getPhoto({
+            quality: 90,
+            allowEditing: false,
+            resultType: CameraResultType.DataUrl,
+            source: CameraSource.Camera,
+        });
 
-      if (photo.dataUrl) {
-        const file = this.dataURLtoFile(photo.dataUrl, `imagen${this.images.length + 1}.jpg`);
-        
-        // Mostrar loading mientras se valida
-        this.isLoading = true;
-        
-        try {
-          // Validar la imagen antes de agregarla
-          await this.validarImagen(file);
-          
-          // Si la validación es exitosa, agregar la imagen
-          this.imagePreviews.push(photo.dataUrl);
-          this.images.push(file);
-          this.areImagesValid.push(true);
-          this.allImagesValid = this.areImagesValid.every(isValid => isValid);
-          this.changeDetector.detectChanges();
-        } catch (validationError) {
-          console.error('Error en la validación:', validationError);
-          alert('La imagen no cumple con los criterios requeridos. Por favor, intenta nuevamente.');
+        if (photo.dataUrl) {
+            const file = this.dataURLtoFile(photo.dataUrl, `imagen${this.images.length + 1}.jpg`);
+
+            // Mostrar loading mientras se valida
+            this.isLoading = true;
+
+            try {
+                // Validar la imagen antes de agregarla
+                await this.validarImagen(file);
+
+                // Si la validación es exitosa, agregar la imagen
+                this.imagePreviews.push(photo.dataUrl);
+                this.images.push(file);
+                this.areImagesValid.push(true);
+            } catch (validationError) {
+                console.error('Error en la validación:', validationError);
+                
+                // Si la imagen no es válida, mostrar en rojo sin alert
+                this.imagePreviews.push(photo.dataUrl);
+                this.images.push(file);
+                this.areImagesValid.push(false); // Marcar imagen como no válida
+            } finally {
+                // Verificar si todas las imágenes son válidas
+                this.allImagesValid = this.areImagesValid.every(isValid => isValid);
+                this.changeDetector.detectChanges();
+            }
         }
-      }
     } catch (error) {
-      console.error("Error al tomar la foto:", error);
-      alert("No se pudo acceder a la cámara o tomar la foto.");
+        console.error("Error al tomar la foto:", error);
+        alert("No se pudo acceder a la cámara o tomar la foto.");
     } finally {
-      this.isLoading = false;
-      this.changeDetector.detectChanges();
+        this.isLoading = false;
+        this.changeDetector.detectChanges();
     }
 }
 
@@ -113,19 +127,21 @@ private async validarImagen(file: File): Promise<void> {
       );
 
       if (!bookTag) {
-          throw new Error('La imagen no parece ser un libro o no tiene suficiente claridad.');
+        throw new Error('La imagen no parece ser un libro o no tiene suficiente claridad.');
       }
-  } catch (error) {
+      this.showNotification('Imagen validada con éxito.', true);
+    } catch (error) {
       console.error('Error en la validación de la imagen:', error);
-      throw new Error('Error al validar la imagen. Por favor, intenta nuevamente.');
+      this.showNotification('La imagen no parece ser un libro o no tiene suficiente claridad.', false);
+      throw error;
+    }
   }
-}
 
   async obtenerIdEstadoPedido() {
     try {
       this.isLoading = true;
       const response = await firstValueFrom(this.ventaService.getEstadoPedido(this.idDetalleVenta));
-      this.idEstadoPedido = response.idEstadoPedido; // Ahora esto debería funcionar
+      this.idEstadoPedido = response.idEstadoPedido;
       console.log('idEstadoPedido obtenido:', this.idEstadoPedido);
     } catch (error) {
       console.error('Error al obtener idEstadoPedido:', error);
@@ -159,109 +175,91 @@ private async validarImagen(file: File): Promise<void> {
     }
   }
 
-  cargarEstadoActual() {
-    this.ventaService.getDetalleById(this.idDetalleVenta).subscribe({
-      next: (data) => {
-        if (data && data.estado) {
-          this.estado = data.estado;
-          this.idVentas = data.idVentas;  // Asignamos idVentas aquí
-          console.log('ID de venta:', this.idVentas);
-        } else {
-          console.error('La respuesta no contiene el estado esperado.');
-          this.estado = 'Desconocido';
-        }
-        this.changeDetector.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error al cargar estado actual:', err);
-        this.estado = 'Error';
-        this.changeDetector.detectChanges();
-      },
-    });
+  async cargarEstadoActual() {
+    try {
+      if (!this.idVentas) {
+        console.error('No se tiene un idVentas válido.');
+        return;
+      }
+  
+      this.isLoading = true;
+  
+      // Obtener la venta con sus detalles y estado
+      const data = await firstValueFrom(this.ventaService.getVentaConDetallesYEstado(this.idVentas));
+  
+      if (data && data.estadoPedido) {
+        this.estado = data.estadoPedido.estado || 'Desconocido';
+        this.nuevoEstado = this.obtenerSiguienteEstado(this.estado);
+      } else {
+        console.error('No se encontró el estado del pedido.');
+        this.estado = 'Desconocido';
+      }
+    } catch (error) {
+      console.error('Error al cargar estado actual:', error);
+      this.estado = 'Error';
+    } finally {
+      this.isLoading = false;
+      this.changeDetector.detectChanges();
+    }
   }
-  private formatDateToYYYYMMDD(date: Date): string {
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;  // Usar formato año-mes-día
-  }
+  
   async guardarEvidencia() {
     if (this.images.length === 0) {
-        alert('Debes tomar al menos una foto antes de guardar.');
-        return;
+      this.showNotification('Debes tomar al menos una foto antes de guardar.', false);
+      return;
     }
 
     if (!this.areImagesValid.every(isValid => isValid)) {
-        alert('Algunas imágenes no han sido validadas correctamente. Por favor, verifica las imágenes.');
-        return;
+      this.showNotification('Algunas imágenes no han sido validadas correctamente.', false);
+      return;
     }
 
     if (!(this.fecha instanceof Date) || isNaN(this.fecha.getTime())) {
-        console.error('Fecha no válida:', this.fecha);
-        alert('La fecha seleccionada no es válida. Por favor, verifica la entrada.');
-        return;
+      this.showNotification('La fecha seleccionada no es válida.', false);
+      return;
     }
 
     if (this.idVentas === null) {
-        console.error('ID de venta no disponible.');
-        alert('El ID de venta no está disponible. Recargue la página.');
-        return;
+      this.showNotification('El ID de venta no está disponible. Recargue la página.', false);
+      return;
     }
 
     try {
-        this.isLoading = true;
-        const formData = new FormData();
-        
-        // Datos básicos
-        formData.append('IdVenta', this.idVentas.toString());
-        formData.append('Estado', this.selectedEstado);
-        formData.append('IdDetalleVentas', this.idDetalleVenta.toString());
-        formData.append('IdEstadoPedido', this.idEstadoPedido.toString());
-        formData.append('FechaEstado', this.formatDateToYYYYMMDD(this.fecha));
-        formData.append('Comentario', this.descripcion);
+      this.isLoading = true;
+      const formData = new FormData();
+      formData.append('IdVenta', this.idVentas.toString());
+      formData.append('Estado', this.nuevoEstado);
+      formData.append('IdDetalleVentas', this.idDetalleVenta.toString());
+      formData.append('IdEstadoPedido', this.idEstadoPedido.toString());
+      formData.append('FechaEstado', this.fecha.toISOString());
+      formData.append('Comentario', this.descripcion);
 
-        // Agregar imágenes validadas
-        for (let i = 0; i < this.images.length; i++) {
-            formData.append('images', this.images[i]);
-        }
+      for (let i = 0; i < this.images.length; i++) {
+        formData.append('images', this.images[i]);
+      }
 
-        // Log para debugging
-        console.log("Contenido del FormData:");
-        formData.forEach((value, key) => {
-            if (value instanceof File) {
-                console.log(key, value.name, value.size);
-            } else {
-                console.log(key, value);
-            }
-        });
-
-        const response = await firstValueFrom(
-            this.ventaService.actualizarEstadoPedidoConImagenes(this.idVentas, formData)
-        );
-
-        console.log('Respuesta del servidor:', response);
-        this.router.navigate(['/historial']);
-        alert('Se agregó correctamente');
+      const response = await firstValueFrom(this.ventaService.actualizarEstadoPedidoConImagenes(this.idVentas, formData));
+      console.log('Respuesta del servidor:', response);
+      this.router.navigate(['/historial']);
+      this.showNotification('Se agregó correctamente.', true);
     } catch (error: any) {
-        console.error('Error al actualizar:', error);
-        let errorMessage = 'Ocurrió un error al actualizar: \n';
-        if (error?.error?.errors) {
-            Object.entries(error.error.errors).forEach(([key, value]) => {
-                errorMessage += `${key}: ${value}\n`;
-            });
-        } else if (error?.error?.message) {
-            errorMessage = error.error.message;
-        } else if (error?.message) {
-            errorMessage = error.message;
-        } else {
-            errorMessage = 'Error desconocido. Contacte al administrador.';
-        }
-        alert(errorMessage);
+      console.error('Error al actualizar:', error);
+      let errorMessage = 'Ocurrió un error al actualizar: \n';
+      if (error?.error?.errors) {
+        Object.entries(error.error.errors).forEach(([key, value]) => {
+          errorMessage += `${key}: ${value}\n`;
+        });
+      } else if (error?.error?.message) {
+        errorMessage = error.error.message;
+      } else {
+        errorMessage = 'Error desconocido. Contacte al administrador.';
+      }
+      this.showNotification(errorMessage, false);
     } finally {
-        this.isLoading = false;
-        this.changeDetector.detectChanges();
+      this.isLoading = false;
+      this.changeDetector.detectChanges();
     }
-}
+  }
   onDateChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.fecha = new Date(input.value);
@@ -279,11 +277,13 @@ eliminarImagen(index: number) {
   this.changeDetector.detectChanges();
 }
 
-  obtenerSiguienteEstado(estadoActual: string): string {
-    if (estadoActual === 'En Proceso') return 'Empaquetado';
-    if (estadoActual === 'Empaquetado') return 'Entregado';
-    return 'Entregado';
-  }
+obtenerSiguienteEstado(estadoActual: string): string {
+  const estadosOrden = ["En Proceso", "Pedido Aceptado", "Empaquetado", "Dejado en Curier"];
+  const indice = estadosOrden.indexOf(estadoActual);
+  return indice !== -1 && indice < estadosOrden.length - 1
+    ? estadosOrden[indice + 1]
+    : estadoActual;
+}
 
   dataURLtoFile(dataurl: string, filename: string): File {
     const arr = dataurl.split(',');

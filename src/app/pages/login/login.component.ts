@@ -1,47 +1,52 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../service/auth.service';
-
 import { Router } from '@angular/router';
 import { LoginData } from '../../models/LoginData';
-import { AuthResponse } from '../../models/Auth';
 import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']  // Asegúrate de usar 'styleUrls'
+  styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit{
+export class LoginComponent implements OnInit {
   loginData: LoginData = { username: '', password: '' };
-  errorMessage: string | null = null;
-  notificationMessage: string | null = null;
-  notificationSuccess: boolean = true;
-  isLoading: boolean = false; // Estado de carga
+  notificationMessage: string | null = null; // Mensaje de notificación
+  notificationSuccess: boolean = true; // Estado de la notificación
   constructor(private authService: AuthService, private router: Router, private spinner: NgxSpinnerService) {
     if (this.authService.getToken()) {
-      this.router.navigate(['/inicio']); // Redirige automáticamente si el usuario ya está autenticado
+      this.router.navigate(['/inicio']);
     }
   }
-  
+
   ngOnInit() {
     if (this.authService.getToken()) {
       this.router.navigate(['/inicio']);
     }
   }
+
   login() {
-    this.spinner.show();
-    
+    this.spinner.show(); // Muestra el spinner
     this.authService.login(this.loginData.username, this.loginData.password).subscribe(
       (response) => {
-        this.spinner.hide();
+        this.spinner.hide(); // Oculta el spinner
+
         if (response.success) {
-          this.router.navigate(['/inicio']);
+          // Login exitoso
+          this.notificationMessage = 'Inicio de sesión exitoso';
+          this.notificationSuccess = true;
+          this.router.navigate(['/inicio']); // Redirige al inicio después de 2 segundos
+          setTimeout(() => (this.notificationMessage = null), 2000);
         }
       },
       (error) => {
-        this.spinner.hide();
-        console.error('Error:', error);
+        this.spinner.hide(); // Oculta el spinner
+
+        // Login fallido
+        this.notificationMessage = 'Credenciales incorrectas';
+        this.notificationSuccess = false;
+        setTimeout(() => (this.notificationMessage = null), 3000);
       }
     );
-  } 
+  }
 }

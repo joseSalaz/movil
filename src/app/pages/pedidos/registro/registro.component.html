@@ -1,60 +1,68 @@
-<div class="registro-container p-4 space-y-4 max-w-md mx-auto">
-  <h2 class="text-xl font-bold text-center text-gray-800 mb-4">Agregar Evidencia</h2>
+<app-notificacion
+  [message]="notificationMessage"
+  [success]="notificationSuccess">
+</app-notificacion>
 
-  <div class="bg-gray-100 p-2 rounded-md">
-    <label class="block text-gray-600">Estado Actual</label>
-    <p class="text-gray-800 font-semibold">{{ estado }}</p>
+<div class="registro-container mx-auto max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6">
+  <h2 class="text-2xl font-bold text-center text-gray-900">📸 Agregar Evidencia</h2>
+
+  <!-- Estado Actual -->
+  <div class="bg-gray-100 p-3 rounded-lg border border-gray-300">
+    <label class="text-gray-600 font-medium">Estado Actual</label>
+    <p class="text-gray-900 font-semibold text-lg">{{ estado }}</p>
   </div>
 
-  <div class="flex flex-col space-y-2">
-    <label for="fecha" class="block text-gray-600 mb-1">Fecha</label>
-    <input type="date" (change)="onDateChange($event)" />
-  </div>
-  
+  <!-- Fecha -->
   <div>
-    <label for="nuevoEstado" class="block text-gray-600 mb-1">Nuevo Estado</label>
-    <select 
-      [(ngModel)]="selectedEstado" 
-      name="nuevoEstado" 
-      id="nuevoEstado" 
-      class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300 text-lg"
-    >
-      <option *ngFor="let estado of estados" [ngValue]="estado">{{ estado }}</option>
-    </select>
-  </div>
-  
-
-  <div *ngIf="isLoading" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-    <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+    <label class="text-gray-600 font-medium">📅 Fecha</label>
+    <input type="date" [value]="fecha | date:'yyyy-MM-dd'" disabled 
+           class="w-full p-3 rounded-lg border border-gray-300 bg-gray-200 cursor-not-allowed text-gray-700" />
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-    <div *ngFor="let preview of imagePreviews; let i = index" class="relative">  <img [src]="preview" alt="Imagen {{ i + 1 }}" class="w-full h-48 object-cover rounded-md">
-      <div *ngIf="areImagesValid[i] === false" class="absolute inset-0 bg-red-500 bg-opacity-75 flex items-center justify-center rounded-md">
-        <span class="text-white font-bold text-lg">Imagen no válida</span>
+  <!-- Nuevo Estado -->
+  <div>
+    <label class="text-gray-600 font-medium">🔄 Nuevo Estado</label>
+    <input type="text" [value]="nuevoEstado" disabled 
+           class="w-full p-3 rounded-lg border border-gray-300 bg-gray-200 cursor-not-allowed text-gray-700 text-lg font-medium" />
+  </div>
+
+  <!-- Spinner de Carga -->
+  <div *ngIf="isLoading" class="spinner-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Previsualización de Imágenes -->
+  <div class="grid grid-cols-2 gap-4">
+    <div *ngFor="let preview of imagePreviews; let i = index" class="relative group overflow-hidden rounded-lg shadow-md">
+      <img [src]="preview" alt="Imagen {{ i + 1 }}" class="w-full h-48 object-cover transition-transform duration-300 transform group-hover:scale-105">
+      <div *ngIf="areImagesValid[i] === false" 
+           class="absolute inset-0 bg-red-500 bg-opacity-75 flex items-center justify-center rounded-lg">
+        <span class="text-white font-bold text-lg">❌ Imagen no válida</span>
       </div>
-      <button (click)="eliminarImagen(i)" class="absolute top-2 right-2 bg-gray-800 bg-opacity-75 text-white rounded-full p-2 hover:bg-red-600 transition">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
+      <button (click)="eliminarImagen(i)" 
+              class="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-red-600 transition">
+        ✖
       </button>
     </div>
   </div>
 
-  <button (click)="takePhoto()" class="w-full bg-blue-500 text-white py-3 rounded-md shadow-md hover:bg-blue-600 transition text-lg font-medium">
-    Tomar Foto
+  <!-- Botón para tomar foto -->
+  <button (click)="takePhoto()" 
+          class="w-full bg-blue-600 text-white py-3 rounded-lg shadow-md hover:bg-blue-700 transition text-lg font-semibold">
+    📷 Tomar Foto
   </button>
 
+  <!-- Descripción -->
   <div>
-    <label class="block text-gray-600 mb-1">Descripción</label>
-    <textarea
-    [(ngModel)]="descripcion"
-    class="w-full p-3 border rounded"
-    placeholder="Ingrese una descripción">
-  </textarea>
+    <label class="text-gray-600 font-medium">📝 Descripción</label>
+    <textarea [(ngModel)]="descripcion" 
+              class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 resize-none" 
+              placeholder="Ingrese una descripción"></textarea>
   </div>
 
-  <button (click)="guardarEvidencia()"  class="w-full bg-green-500 text-white py-3 rounded-md shadow-md hover:bg-green-600 transition text-lg font-medium">
-    Guardar
+  <!-- Botón de Guardar -->
+  <button (click)="guardarEvidencia()" 
+          class="w-full bg-green-500 text-white py-3 rounded-lg shadow-md hover:bg-green-600 transition text-lg font-semibold">
+    ✅ Guardar
   </button>
 </div>

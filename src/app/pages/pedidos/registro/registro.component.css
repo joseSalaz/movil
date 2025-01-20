@@ -1,91 +1,50 @@
-/* Estilo para la imagen de evidencia */
-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* Asegura que la imagen se ajusta al contenedor sin recortarse */
-    border-radius: 8px;
+/* Contenedor del formulario */
+.registro-container {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Contenedor para la previsualización de la imagen */
-.w-full.h-48.bg-gray-200 {
-    max-height: 200px; /* Limita la altura máxima para el contenedor */
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-/* Botones */
+/* Botón de acción */
 button {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 8px;
+  transition: all 0.3s ease-in-out;
 }
 
-/* Campos de texto */
-textarea {
-    resize: none;
+/* Imágenes con efecto hover */
+.group:hover img {
+  transform: scale(1.05);
 }
 
-/* Estilo para el contenedor del formulario */
-.p-4 {
-    padding: 16px;
+/* Botón de eliminar imagen */
+button:hover {
+  transform: scale(1.1);
 }
-/* CSS para el spinner */
+
+/* Spinner de carga */
 .spinner-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  }
-  
-  .spinner {
-    border: 8px solid #f3f3f3; /* Color gris claro */
-    border-top: 8px solid #3498db; /* Color azul */
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
-  }
-  
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
 
-  .spinner-overlay {
-    position: absolute; /* O fixed, dependiendo de tus necesidades */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Asegura que esté por encima de otros elementos */
-  }
-  
-  .spinner {
-    border: 4px solid #f3f3f3; /* Color del borde exterior */
-    border-top: 4px solid #3498db; /* Color del borde superior */
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 2s linear infinite; /* Animación de rotación */
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+.spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
