@@ -1,7 +1,7 @@
 export const environment = {
     production: true,
 
-    endPoint: 'http://10.0.2.2:5229/',
+    endPoint: 'https://api20250116150338.azurewebsites.net/',
     firebaseConfig :{
       apiKey: "AIzaSyDalTAm9ttdXOJll_8B89SHHyNCP8Jm_rM",
       authDomain: "ecomercesa-3c1ff.firebaseapp.com",

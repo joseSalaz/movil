@@ -15,7 +15,6 @@ export class AppComponent implements OnInit{
     const initialized = await this.pushService.initialize();
     if (initialized) {
       console.log('Notificaciones inicializadas correctamente');
-      alert("token"+this.pushService.token$)
     }
   }
 }
