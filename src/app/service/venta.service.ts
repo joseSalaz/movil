@@ -11,7 +11,7 @@ import { EstadoPedido } from '../models/estado_pedido';
   providedIn: 'root',
 })
 export class VentaService {
-  private apiUrl = 'https://api20250116150338.azurewebsites.net/';
+  private apiUrl = 'http://localhost:5229/';
 
 
   constructor(private http: HttpClient) {}
