@@ -59,9 +59,14 @@ export class PushNotificationService {
     PushNotifications.addListener('registration', (token) => {
       console.log('Token FCM:', token.value);
       this.tokenSubject.next(token.value);
+<<<<<<< HEAD
       this.sendTokenToBackend(token.value,2);
       alert("este es el "+token.value)
 
+=======
+      this.sendTokenToBackend(token.value,2).subscribe( {
+      });
+>>>>>>> 1e7f0db4b9693b70400ece59a6028291cf24765b
     });
 
     // Registration error
@@ -85,10 +90,9 @@ export class PushNotificationService {
 
   sendTokenToBackend(token: string, userId: number): Observable<any> {
     const payload = { usuarioId: userId, token: token };
-    alert("enviando al back"+token)
-    return this.http.post<any>(`https://api20250116150338.azurewebsites.net/api/notification/register-token`, payload).pipe(
+    return this.http.post<any>(`https://api20250116150338.azurewebsites.net/api/Notificacion/register-token`, payload).pipe(
       catchError((error) => {
-        console.error('Error al enviar el token:', error);
+        alert(JSON.stringify(error));
         throw error;
       })
     );
