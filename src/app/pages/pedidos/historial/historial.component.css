@@ -1,92 +1,150 @@
-.historial-container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+
+
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
-.heading {
+
+
+h2 {
   text-align: center;
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-  font-family: 'Roboto', sans-serif;
-  font-weight: bold;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-/* Filter Actions */
 .filter-actions {
   display: flex;
-  flex-direction: column; /* Cambiar a columna */
-  gap: 10px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.tab-container {
+.filter-row {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 1rem;
 }
 
-.tab {
-  padding: 10px 20px;
-  border: none;
-  background-color: #f0f0f0;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
+.filter-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.tab.active {
-  background-color: #ffffff;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+.filter-group.small-input {
+  flex: 0.45;
 }
 
-.search-bar {
-  width: 100%;
-  padding: 8px 12px;
+.date-input-wrapper {
+  position: relative;
+}
+
+.filter-date {
+  padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 5px;
+  font-size: 0.9rem;
+  width: 100%;
+  transition: border-color 0.3s;
 }
 
-/* Pedido Table */
+.filter-date:focus {
+  outline: none;
+  border-color: #28a745;
+}
+
+.calendar-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 1.2rem;
+  color: #aaa;
+}
+
+.filter-select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  transition: border-color 0.3s;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #28a745;
+}
+
+.filter-button {
+  align-self: center;
+  padding: 0.7rem;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.filter-button i {
+  font-size: 1.2rem;
+  color: white;
+}
+
+.filter-button:hover {
+  background-color: #0056b3;
+}
+
 .pedido-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.pedido-table th {
-  padding: 10px;
-  text-align: center;
-  font-weight: bold;
-  border: none; /* Sin líneas en los encabezados */
-}
-
+.pedido-table th,
 .pedido-table td {
-  border-bottom: 1px solid #ddd; /* Solo borde inferior */
   padding: 10px;
   text-align: center;
   font-size: 0.9rem;
-  font-family: 'Roboto', sans-serif;
+}
+
+.pedido-table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+.pedido-table td {
+  border-bottom: 1px solid #ddd;
 }
 
 .ver-button {
   background-color: #ffa500;
-  color: white;
+  color: #fff;
   padding: 5px 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-weight: bold;
 }
 
-/* Estado Styles */
+.ver-button:hover {
+  background-color: #cc8400;
+}
+
 .estado {
   display: inline-block;
   padding: 5px 10px;
   border-radius: 5px;
   font-weight: bold;
+}
+
+.estado-en-proceso {
+  background-color: #dc3545;
+  color: white;
 }
 
 .estado-empaquetado {
@@ -99,55 +157,49 @@
   color: black;
 }
 
-.estado-en-proceso {
-  background-color: #dc3545;
-  color: white;
-}
-.estado-dejado-en-curier
-{
+.estado-dejado-en-curier {
   background-color: #28a745;
   color: black;
 }
 
+.no-results {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #888;
+  text-align: center;
+}
 
-/* Form Styles */
-input {
-  border: none;
-  border-bottom: 2px solid #ccc; /* Solo la línea inferior */
-  border-radius: 0;
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pagination-button {
+  background-color: #007bff;
+  color: #fff;
   padding: 8px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-input:focus {
-  outline: none;
-  border-bottom: 2px solid #007bff;
+.pagination-button i {
+  font-size: 1.2rem;
 }
 
-@media (max-width: 768px) {
-  .filter-actions {
-    gap: 5px;
-  }
-
-  .tab-container {
-    flex-direction: row;
-    justify-content: space-around;
-  }
-
-  .search-bar {
-    width: 100%;
-  }
-
-  .pedido-table th,
-  .pedido-table td {
-    font-size: 0.8rem;
-  }
-  h2 {
-    margin-top: 1rem;
-    margin-bottom: 0.5rem; /* Separa el título de los inputs */
-  }
-  @media (max-width: 480px) {
-    h2 {
-      font-size: 2rem; /* Ajusta el tamaño del título en móviles */
-    }
+.pagination-button:hover {
+  background-color: #0056b3;
 }
+
+.pagination-info {
+  font-size: 1rem;
+  font-weight: bold;
 }

@@ -1,6 +1,6 @@
 // services/venta.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
 import { VentaResponse } from '../models/ventaResponse';
 import { DetalleVenta } from '../models/detalle_venta';
@@ -11,20 +11,23 @@ import { EstadoPedido } from '../models/estado_pedido';
   providedIn: 'root',
 })
 export class VentaService {
-  private apiUrl = 'https://api20250116150338.azurewebsites.net/';
+  private apiUrl = 'http://localhost:5229/';
 
 
   constructor(private http: HttpClient) {}
 
   // Obtener ventas paginadas
-  getVentas(page: number, pageSize: number, ordenarPorFechaDesc = true): Observable<VentaResponse> {
-    return this.http.get<VentaResponse>(`${this.apiUrl}Venta/Paginator`, {
-      params: {
-        page: page.toString(),
-        pageSize: pageSize.toString(),
-        ordenarPorFechaDesc: ordenarPorFechaDesc.toString(),
-      },
-    });
+  getVentas(page: number, pageSize: number, estado: string | null = null, ordenarPorFechaDesc: boolean = true, fechaInicio?: string, fechaFin?: string): Observable<VentaResponse> {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('pageSize', pageSize)
+      .set('ordenarPorFechaDesc', ordenarPorFechaDesc);
+
+    if (estado) params = params.set('estado', estado);
+    if (fechaInicio) params = params.set('fechaInicio', fechaInicio);
+    if (fechaFin) params = params.set('fechaFin', fechaFin);
+
+    return this.http.get<VentaResponse>(`${this.apiUrl}Venta/Paginator`, { params });
   }
 
     // Obtener detalles de una venta

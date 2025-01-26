@@ -64,7 +64,6 @@ export class RegistroComponent implements OnInit {
       await this.cargarEstadoActual();
     } catch (error) {
       console.error('Error al inicializar datos:', error);
-      alert('Error al cargar los datos iniciales. Por favor, recargue la página.');
     } finally {
       this.isLoading = false;
       this.changeDetector.detectChanges();
@@ -108,7 +107,7 @@ export class RegistroComponent implements OnInit {
         }
     } catch (error) {
         console.error("Error al tomar la foto:", error);
-        alert("No se pudo acceder a la cámara o tomar la foto.");
+    
     } finally {
         this.isLoading = false;
         this.changeDetector.detectChanges();
@@ -145,7 +144,7 @@ private async validarImagen(file: File): Promise<void> {
       console.log('idEstadoPedido obtenido:', this.idEstadoPedido);
     } catch (error) {
       console.error('Error al obtener idEstadoPedido:', error);
-      alert('Error al obtener el estado del pedido.');
+  
     } finally {
       this.isLoading = false;
       this.changeDetector.detectChanges();
@@ -162,12 +161,12 @@ private async validarImagen(file: File): Promise<void> {
         console.log('IdVentas obtenido:', this.idVentas);
       } else {
         console.error('No se pudo obtener idVentas del detalle.');
-        alert('No se pudo obtener la información de la venta. Recargue la página.');
+      
         this.idVentas = null;
       }
     } catch (error) {
       console.error('Error al obtener el detalle:', error);
-      alert('Error al obtener la información de la venta.');
+   
       this.idVentas = null;
     } finally {
       this.isLoading = false;
@@ -264,7 +263,6 @@ private async validarImagen(file: File): Promise<void> {
     const input = event.target as HTMLInputElement;
     this.fecha = new Date(input.value);
     if (isNaN(this.fecha.getTime())) {
-      alert('La fecha seleccionada no es válida. Por favor, verifica la entrada.');
     }
   }
 
