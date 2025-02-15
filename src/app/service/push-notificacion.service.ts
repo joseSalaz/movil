@@ -86,7 +86,7 @@ export class PushNotificationService {
 
   sendTokenToBackend(token: string, userId: number): Observable<any> {
     const payload = { usuarioId: userId, token: token };
-    return this.http.post<any>(`https://api20250116150338.azurewebsites.net/api/Notificacion/register-token`, payload).pipe(
+    return this.http.post<any>(`https://api20250205164724.azurewebsites.net/api/Notificacion/register-token`, payload).pipe(
       catchError((error) => {
         throw error;
       })

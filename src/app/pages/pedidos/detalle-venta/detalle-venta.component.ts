@@ -14,7 +14,7 @@ export class DetalleVentaComponent implements OnInit {
   idVenta!: number;
   detallesVentaConLibro: { detalle: DetalleVenta; libro?: Libro }[] = [];
   loading: boolean = true;
-
+  venta: any = null;
   constructor(
     private route: ActivatedRoute,
     private ventaService: VentaService,
@@ -27,12 +27,22 @@ export class DetalleVentaComponent implements OnInit {
     if (idVentaParam && !isNaN(+idVentaParam)) {
       this.idVenta = +idVentaParam;
       this.cargarDetalleVenta();
+      this.cargarVentaInfo();
     } else {
       console.error('ID de venta inválido o no encontrado. Redirigiendo...');
       this.router.navigate(['/historial']);
     }
   }
-
+  cargarVentaInfo() {
+    this.ventaService.getVentaInfo(this.idVenta).subscribe({
+      next: (data) => {
+        this.venta = data;
+      },
+      error: (error) => {
+        console.error('Error al cargar la información de la venta:', error);
+      },
+    });
+  }
   cargarDetalleVenta() {
     this.ventaService.getVentaDetalles(this.idVenta).subscribe({
       next: (data) => {

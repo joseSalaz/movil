@@ -1,7 +1,9 @@
 export const environment = {
     production: true,
 
-    endPoint: 'http://localhost:5229/',
+    endPoint: 'https://api20250205164724.azurewebsites.net/',
+    //http://localhost:5229/
+    //https://api20250205164724.azurewebsites.net/
     firebaseConfig :{
       apiKey: "AIzaSyDalTAm9ttdXOJll_8B89SHHyNCP8Jm_rM",
       authDomain: "ecomercesa-3c1ff.firebaseapp.com",

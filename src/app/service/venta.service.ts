@@ -11,9 +11,10 @@ import { EstadoPedido } from '../models/estado_pedido';
   providedIn: 'root',
 })
 export class VentaService {
-  private apiUrl = 'http://localhost:5229/';
+  private apiUrl = 'https://api20250205164724.azurewebsites.net/';
 
-
+  //http://localhost:5229/
+//https://api20250205164724.azurewebsites.net/
   constructor(private http: HttpClient) {}
 
   // Obtener ventas paginadas
@@ -89,5 +90,9 @@ export class VentaService {
   }  
   getVentaConDetallesYEstado(idVenta: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}Venta/GetVentaConDetallesYEstado/${idVenta}`);
+  }
+
+  getVentaInfo(idVenta: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}Venta/detallePersona/${idVenta}`);
   }
 }

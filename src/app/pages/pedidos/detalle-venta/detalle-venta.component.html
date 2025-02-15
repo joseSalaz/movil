@@ -1,31 +1,51 @@
-<div class="detalle-venta-container p-4 space-y-4">
+<div class="detalle-venta-container p-4 space-y-4 bg-gray-100 min-h-screen">
   <h2 class="text-xl font-bold text-center text-gray-800">Detalles de la Venta</h2>
 
-  <div *ngIf="loading" class="text-center">Cargando...</div>
+  <div *ngIf="loading" class="text-center text-blue-500 font-semibold">Cargando...</div>
 
-  <div
-    *ngFor="let detalleConLibro of detallesVentaConLibro"
-    class="flex flex-col bg-gray-50 p-4 rounded-lg shadow-md space-y-4"
-  >
+  <div *ngFor="let detalleConLibro of detallesVentaConLibro"
+    class="flex flex-col bg-white p-4 rounded-lg shadow-lg space-y-4">
+
     <!-- Imagen del libro -->
     <div *ngIf="detalleConLibro.libro?.imagen" class="flex justify-center">
-      <img [src]="detalleConLibro.libro?.imagen" alt="Imagen del Libro" class="h-32 w-auto object-contain rounded-md">
+      <img [src]="detalleConLibro.libro?.imagen" alt="Imagen del Libro" class="h-36 w-auto object-cover rounded-lg shadow">
     </div>
 
     <!-- Información del producto -->
-    <div class="flex justify-between mb-2">
-      <span class="font-semibold text-gray-600">Producto:</span>
-      <span class="text-gray-800">{{ detalleConLibro.detalle.nombreProducto }}</span>
-    </div>
-    <div class="flex justify-between mb-2">
-      <span class="font-semibold text-gray-600">Estado:</span>
-      <span class="text-blue-600">{{ detalleConLibro.detalle.estado }}</span>
+    <div class="space-y-2">
+      <div class="flex justify-between text-gray-700">
+        <span class="font-semibold">Producto:</span>
+        <span>{{ detalleConLibro.detalle.nombreProducto }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="font-semibold text-gray-600">Estado:</span>
+        <span class="text-blue-500 font-medium">{{ detalleConLibro.detalle.estado }}</span>
+      </div>
     </div>
   </div>
 
-  <button
-    (click)="agregarEvidencia()"
-    class="bg-blue-500 text-white py-2 rounded-md mt-4 w-full hover:bg-blue-600 transition">
-    Agregar Evidencia
+  <!-- Información del Cliente -->
+  <div class="bg-white p-4 rounded-lg shadow-lg space-y-2">
+    <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Información del Cliente</h3>
+    <p><strong class="text-gray-600">Nombre:</strong> {{ venta?.nombre }} {{ venta?.apellidoPaterno }} {{ venta?.apellidoMaterno }}</p>
+    <p><strong class="text-gray-600">Correo:</strong> {{ venta?.correo }}</p>
+    <p><strong class="text-gray-600">Teléfono:</strong> {{ venta?.telefono }}</p>
+    <p><strong class="text-gray-600">Documento:</strong> {{ venta?.tipo_Documento }} - {{ venta?.numero_Documento }}</p>
+  </div>
+
+  <!-- Dirección de Envío -->
+  <div class="bg-white p-4 rounded-lg shadow-lg space-y-2">
+    <h3 class="text-lg font-bold text-gray-800 border-b pb-2">Dirección de Envío</h3>
+    <p><strong class="text-gray-600">Dirección:</strong> {{ venta?.direccion }}</p>
+    <p><strong class="text-gray-600">Referencia:</strong> {{ venta?.referencia }}</p>
+    <p><strong class="text-gray-600">Distrito:</strong> {{ venta?.distrito }}, <strong class="text-gray-600">Provincia:</strong> {{ venta?.provincia }}</p>
+    <p><strong class="text-gray-600">Departamento:</strong> {{ venta?.departamento }}</p>
+    <p><strong class="text-gray-600">Código Postal:</strong> {{ venta?.codigoPostal }}</p>
+  </div>
+
+  <!-- Botón de Agregar Evidencia -->
+  <button (click)="agregarEvidencia()"
+    class="bg-blue-600 text-white py-3 rounded-lg w-full font-semibold hover:bg-blue-700 transition-shadow shadow-md">
+    📷 Agregar Evidencia
   </button>
 </div>
