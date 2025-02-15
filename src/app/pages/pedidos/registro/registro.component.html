@@ -1,68 +1,101 @@
-<app-notificacion
-  [message]="notificationMessage"
-  [success]="notificationSuccess">
-</app-notificacion>
+<div class="main-container">
+  <app-notificacion [message]="notificationMessage"
+                    [success]="notificationSuccess">
+  </app-notificacion>
 
-<div class="registro-container mx-auto max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6">
-  <h2 class="text-2xl font-bold text-center text-gray-900">📸 Agregar Evidencia</h2>
+  <!-- Contenedor principal del registro -->
+  <div class="registro-container mx-auto max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6">
+    
+    <h2 class="text-2xl font-bold text-center text-gray-900">📸 Agregar Evidencia</h2>
 
-  <!-- Estado Actual -->
-  <div class="bg-gray-100 p-3 rounded-lg border border-gray-300">
-    <label class="text-gray-600 font-medium">Estado Actual</label>
-    <p class="text-gray-900 font-semibold text-lg">{{ estado }}</p>
-  </div>
-
-  <!-- Fecha -->
-  <div>
-    <label class="text-gray-600 font-medium">📅 Fecha</label>
-    <input type="date" [value]="fecha | date:'yyyy-MM-dd'" disabled 
-           class="w-full p-3 rounded-lg border border-gray-300 bg-gray-200 cursor-not-allowed text-gray-700" />
-  </div>
-
-  <!-- Nuevo Estado -->
-  <div>
-    <label class="text-gray-600 font-medium">🔄 Nuevo Estado</label>
-    <input type="text" [value]="nuevoEstado" disabled 
-           class="w-full p-3 rounded-lg border border-gray-300 bg-gray-200 cursor-not-allowed text-gray-700 text-lg font-medium" />
-  </div>
-
-  <!-- Spinner de Carga -->
-  <div *ngIf="isLoading" class="spinner-overlay">
-    <div class="spinner"></div>
-  </div>
-
-  <!-- Previsualización de Imágenes -->
-  <div class="grid grid-cols-2 gap-4">
-    <div *ngFor="let preview of imagePreviews; let i = index" class="relative group overflow-hidden rounded-lg shadow-md">
-      <img [src]="preview" alt="Imagen {{ i + 1 }}" class="w-full h-48 object-cover transition-transform duration-300 transform group-hover:scale-105">
-      <div *ngIf="areImagesValid[i] === false" 
-           class="absolute inset-0 bg-red-500 bg-opacity-75 flex items-center justify-center rounded-lg">
-        <span class="text-white font-bold text-lg">❌ Imagen no válida</span>
-      </div>
-      <button (click)="eliminarImagen(i)" 
-              class="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-red-600 transition">
-        ✖
-      </button>
+    <!-- Estado Actual -->
+    <div class="bg-gray-100 p-3 rounded-lg border border-gray-300">
+      <label class="text-gray-600 font-medium">Estado Actual</label>
+      <p class="text-gray-900 font-semibold text-lg">{{ estado }}</p>
     </div>
+
+    <!-- Fecha -->
+    <div>
+      <label class="text-gray-600 font-medium">📅 Fecha</label>
+      <input type="date"
+             [value]="fecha | date:'yyyy-MM-dd'"
+             disabled
+             class="w-full p-3 rounded-lg border border-gray-300 bg-gray-200 cursor-not-allowed text-gray-700" />
+    </div>
+
+    <!-- Nuevo Estado -->
+    <div>
+      <label class="text-gray-600 font-medium">🔄 Nuevo Estado</label>
+      <input type="text"
+             [value]="nuevoEstado"
+             disabled
+             class="w-full p-3 rounded-lg border border-gray-300 bg-gray-200 cursor-not-allowed text-gray-700 text-lg font-medium" />
+    </div>
+
+    <!-- Spinner de Carga -->
+    <div *ngIf="isLoading" class="spinner-overlay">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Previsualización de Imágenes (si hay fotos) -->
+    <div class="grid grid-cols-2 gap-4">
+      <div *ngFor="let preview of imagePreviews; let i = index"
+           class="relative group overflow-hidden rounded-lg shadow-md">
+        <img
+          [src]="preview"
+          alt="Imagen {{ i + 1 }}"
+          class="w-full h-48 object-cover transition-transform duration-300 transform group-hover:scale-105"
+        />
+        <!-- Overlay en caso de ser no válida -->
+        <div *ngIf="areImagesValid[i] === false"
+             class="absolute inset-0 bg-red-500 bg-opacity-75 flex items-center justify-center rounded-lg">
+          <span class="text-white font-bold text-lg">❌ Imagen no válida</span>
+        </div>
+        <!-- Botón de eliminación -->
+        <button
+          (click)="eliminarImagen(i)"
+          class="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-red-600 transition">
+          ✖
+        </button>
+      </div>
+    </div>
+
+    <!-- Botón para tomar foto -->
+    <!-- Oculto cuando estado = 'Dejado en Curier' (no se permiten más evidencias) -->
+    <!-- (Opcional) También podrías ocultarlo si NO hace falta en 'Empaquetado'. Eso depende de tu lógica. -->
+    <button *ngIf="estado !== 'Dejado en Curier'"
+            (click)="takePhoto()"
+            class="w-full bg-blue-600 text-white py-3 rounded-lg shadow-md hover:bg-blue-700 transition text-lg font-semibold">
+      📷 Tomar Foto
+    </button>
+
+    <!-- Descripción -->
+    <!-- Cambiamos el placeholder si el estado actual es 'Empaquetado'
+         y queremos el código de tracking. Ajusta a tu gusto. -->
+    <div *ngIf="estado !== 'Dejado en Curier'; else procesoFinalizado">
+      <label class="text-gray-600 font-medium">📝 Descripción</label>
+      <textarea
+        [(ngModel)]="descripcion"
+        class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 resize-none"
+        [placeholder]="estado === 'Empaquetado'
+                        ? 'Por favor ingrese el código de tracking'
+                        : 'Ingrese una descripción'">
+      </textarea>
+    </div>
+
+    <!-- Botón de Guardar -->
+    <!-- Si el estado ya es 'Dejado en Curier', no mostramos el botón de guardar -->
+    <button *ngIf="estado !== 'Dejado en Curier'"
+            (click)="guardarEvidencia()"
+            class="w-full bg-green-500 text-white py-3 rounded-lg shadow-md hover:bg-green-600 transition text-lg font-semibold">
+      ✅ Guardar
+    </button>
+
+    <!-- Mensaje para proceso finalizado, en lugar del formulario -->
+    <ng-template #procesoFinalizado>
+      <div class="bg-yellow-50 p-4 rounded border border-yellow-200 text-yellow-800">
+        <p class="font-semibold">El proceso está finalizado. No se pueden subir más evidencias.</p>
+      </div>
+    </ng-template>
   </div>
-
-  <!-- Botón para tomar foto -->
-  <button (click)="takePhoto()" 
-          class="w-full bg-blue-600 text-white py-3 rounded-lg shadow-md hover:bg-blue-700 transition text-lg font-semibold">
-    📷 Tomar Foto
-  </button>
-
-  <!-- Descripción -->
-  <div>
-    <label class="text-gray-600 font-medium">📝 Descripción</label>
-    <textarea [(ngModel)]="descripcion" 
-              class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 resize-none" 
-              placeholder="Ingrese una descripción"></textarea>
-  </div>
-
-  <!-- Botón de Guardar -->
-  <button (click)="guardarEvidencia()" 
-          class="w-full bg-green-500 text-white py-3 rounded-lg shadow-md hover:bg-green-600 transition text-lg font-semibold">
-    ✅ Guardar
-  </button>
 </div>

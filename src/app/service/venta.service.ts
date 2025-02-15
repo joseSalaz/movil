@@ -71,7 +71,7 @@ export class VentaService {
 
   // Actualizar estado del pedido
   actualizarEstadoPedidoConImagenes(id: number, formData: FormData): Observable<string> {
-    debugger
+  
     return this.http.put<string>(`${this.apiUrl}DetalleVenta/UpdateEstadoPedidos/${id}`, formData, { responseType: 'text' as 'json' });
   }
   

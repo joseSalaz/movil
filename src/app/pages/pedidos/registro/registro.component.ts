@@ -71,67 +71,104 @@ export class RegistroComponent implements OnInit {
   }
   async takePhoto() {
     try {
-        const photo = await Camera.getPhoto({
-            quality: 90,
-            allowEditing: false,
-            resultType: CameraResultType.DataUrl,
-            source: CameraSource.Camera,
-        });
-
-        if (photo.dataUrl) {
-            const file = this.dataURLtoFile(photo.dataUrl, `imagen${this.images.length + 1}.jpg`);
-
-            // Mostrar loading mientras se valida
-            this.isLoading = true;
-
-            try {
-                // Validar la imagen antes de agregarla
-                await this.validarImagen(file);
-
-                // Si la validación es exitosa, agregar la imagen
-                this.imagePreviews.push(photo.dataUrl);
-                this.images.push(file);
-                this.areImagesValid.push(true);
-            } catch (validationError) {
-                console.error('Error en la validación:', validationError);
-                
-                // Si la imagen no es válida, mostrar en rojo sin alert
-                this.imagePreviews.push(photo.dataUrl);
-                this.images.push(file);
-                this.areImagesValid.push(false); // Marcar imagen como no válida
-            } finally {
-                // Verificar si todas las imágenes son válidas
-                this.allImagesValid = this.areImagesValid.every(isValid => isValid);
-                this.changeDetector.detectChanges();
-            }
+      const photo = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Camera,
+      });
+  
+      if (photo.dataUrl) {
+        const file = this.dataURLtoFile(photo.dataUrl, `imagen${this.images.length + 1}.jpg`);
+  
+        // Mostrar loading mientras se valida
+        this.isLoading = true;
+  
+        try {
+          // Validar la imagen solo si no estamos en el último estado
+          if (this.estado !== 'Dejado en Curier') {
+            await this.validarImagen(file);
+  
+            // Si la validación es exitosa, agregar la imagen
+            this.imagePreviews.push(photo.dataUrl);
+            this.images.push(file);
+            this.areImagesValid.push(this.estado !== 'Empaquetado'); // Marcar como válida si requiere validación
+          } else {
+            // Si estamos en "Dejado en Curier", no validamos la imagen
+            this.imagePreviews.push(photo.dataUrl);
+            this.images.push(file);
+            this.areImagesValid.push(true); // No necesita validación
+          }
+        } catch (validationError) {
+          console.error('Error en la validación:', validationError);
+  
+          // Si la imagen no es válida, mostrar en rojo sin alert
+          this.imagePreviews.push(photo.dataUrl);
+          this.images.push(file);
+          this.areImagesValid.push(false); // Marcar imagen como no válida
+        } finally {
+          // Verificar si todas las imágenes son válidas
+          this.allImagesValid = this.areImagesValid.every(isValid => isValid);
+          this.changeDetector.detectChanges();
         }
+      }
     } catch (error) {
-        console.error("Error al tomar la foto:", error);
-    
+      console.error("Error al tomar la foto:", error);
     } finally {
-        this.isLoading = false;
-        this.changeDetector.detectChanges();
+      this.isLoading = false;
+      this.changeDetector.detectChanges();
     }
-}
+  }
+  
+  
 
-private async validarImagen(file: File): Promise<void> {
-  const formData = new FormData();
-  formData.append('File', file);
+  private async validarImagen(file: File): Promise<void> {
+    // Si el estado actual es 'Empaquetado' o 'Dejado en Curier', no se requiere validación
+    if (this.estado === 'Empaquetado' || this.estado === 'Dejado en Curier') {
+      this.showNotification('Imagen agregada sin validación adicional.', true);
+      return;
+    }
 
-  try {
+    // Si el estado actual no requiere imágenes, no permites subirlas
+    if (this.estado === 'Dejado en Curier') {
+      throw new Error('No se requieren imágenes para este estado.');
+    }
+
+    const formData = new FormData();
+    formData.append('File', file);
+
+    try {
+      // Llama al endpoint de Computer Vision
       const data = await firstValueFrom(this.ventaService.validarImagenLibro(formData));
       const tags = data.tags || [];
-      const bookTag = tags.find(
-          (tag: any) => tag.name === 'book' && tag.confidence >= 0.75
-      );
 
-      if (!bookTag) {
-        throw new Error('La imagen no parece ser un libro o no tiene suficiente claridad.');
+      // Cambios en la validación de imágenes según el estado
+      if (this.estado === 'En Proceso') {
+        const bookTag = tags.find(
+          (tag: any) => tag.name === 'book' && tag.confidence >= 0.75
+        );
+        if (!bookTag) {
+          throw new Error('La imagen no parece ser de un libro con la confianza requerida (>= 0.75).');
+        }
+        this.showNotification('Imagen validada como libro con éxito.', true);
+      } else if (this.estado === 'Pedido Aceptado') {
+        const packagingKeywords = [
+          'cardboard', 'carton', 'shipping box', 'packaging and labeling', 'package delivery', 'shipping supply', 'box',
+        ];
+
+        const hasPackagingTag = tags.some((tag: any) =>
+          packagingKeywords.includes(tag.name) && tag.confidence >= 0.55
+        );
+
+        if (!hasPackagingTag) {
+          throw new Error('La imagen no parece mostrar un paquete o caja con la confianza requerida (>= 0.55).');
+        }
+
+        this.showNotification('Imagen validada como paquete/caja con éxito.', true);
       }
-      this.showNotification('Imagen validada con éxito.', true);
     } catch (error) {
       console.error('Error en la validación de la imagen:', error);
-      this.showNotification('La imagen no parece ser un libro o no tiene suficiente claridad.', false);
+      this.showNotification('Error en la validación de la imagen.', false);
       throw error;
     }
   }
@@ -203,62 +240,74 @@ private async validarImagen(file: File): Promise<void> {
   }
   
   async guardarEvidencia() {
+    if (this.estado === 'Empaquetado') {
+        // Verificamos que se haya ingresado el tracking si estamos en el estado "Empaquetado"
+        if (!this.descripcion || this.descripcion.trim().length === 0) {
+            this.showNotification('Debes ingresar el código de tracking en la descripción.', false);
+            return;
+        }
+    }
+
     if (this.images.length === 0) {
-      this.showNotification('Debes tomar al menos una foto antes de guardar.', false);
-      return;
+        this.showNotification('Debes tomar al menos una foto antes de guardar.', false);
+        return;
     }
 
-    if (!this.areImagesValid.every(isValid => isValid)) {
-      this.showNotification('Algunas imágenes no han sido validadas correctamente.', false);
-      return;
+    // Si no es "Empaquetado", validamos las imágenes
+    if (!this.areImagesValid.every(isValid => isValid) && this.estado !== 'Empaquetado') {
+        this.showNotification('Algunas imágenes no han sido validadas correctamente.', false);
+        return;
     }
 
+    // Validación para la fecha
     if (!(this.fecha instanceof Date) || isNaN(this.fecha.getTime())) {
-      this.showNotification('La fecha seleccionada no es válida.', false);
-      return;
+        this.showNotification('La fecha seleccionada no es válida.', false);
+        return;
     }
 
+    // Verificación de ID de ventas
     if (this.idVentas === null) {
-      this.showNotification('El ID de venta no está disponible. Recargue la página.', false);
-      return;
+        this.showNotification('El ID de venta no está disponible. Recargue la página.', false);
+        return;
     }
 
     try {
-      this.isLoading = true;
-      const formData = new FormData();
-      formData.append('IdVenta', this.idVentas.toString());
-      formData.append('Estado', this.nuevoEstado);
-      formData.append('IdDetalleVentas', this.idDetalleVenta.toString());
-      formData.append('IdEstadoPedido', this.idEstadoPedido.toString());
-      formData.append('FechaEstado', this.fecha.toISOString());
-      formData.append('Comentario', this.descripcion);
+        this.isLoading = true;
+        const formData = new FormData();
+        formData.append('IdVenta', this.idVentas.toString());
+        formData.append('Estado', this.nuevoEstado);
+        formData.append('IdDetalleVentas', this.idDetalleVenta.toString());
+        formData.append('IdEstadoPedido', this.idEstadoPedido.toString());
+        formData.append('FechaEstado', this.fecha.toISOString());
+        formData.append('Comentario', this.descripcion);
 
-      for (let i = 0; i < this.images.length; i++) {
-        formData.append('images', this.images[i]);
-      }
+        for (let i = 0; i < this.images.length; i++) {
+            formData.append('images', this.images[i]);
+        }
 
-      const response = await firstValueFrom(this.ventaService.actualizarEstadoPedidoConImagenes(this.idVentas, formData));
-      console.log('Respuesta del servidor:', response);
-      this.router.navigate(['/historial']);
-      this.showNotification('Se agregó correctamente.', true);
+        const response = await firstValueFrom(this.ventaService.actualizarEstadoPedidoConImagenes(this.idVentas, formData));
+        console.log('Respuesta del servidor:', response);
+        this.router.navigate(['/historial']);
+        this.showNotification('Se agregó correctamente.', true);
     } catch (error: any) {
-      console.error('Error al actualizar:', error);
-      let errorMessage = 'Ocurrió un error al actualizar: \n';
-      if (error?.error?.errors) {
-        Object.entries(error.error.errors).forEach(([key, value]) => {
-          errorMessage += `${key}: ${value}\n`;
-        });
-      } else if (error?.error?.message) {
-        errorMessage = error.error.message;
-      } else {
-        errorMessage = 'Error desconocido. Contacte al administrador.';
-      }
-      this.showNotification(errorMessage, false);
+        console.error('Error al actualizar:', error);
+        let errorMessage = 'Ocurrió un error al actualizar: \n';
+        if (error?.error?.errors) {
+            Object.entries(error.error.errors).forEach(([key, value]) => {
+                errorMessage += `${key}: ${value}\n`;
+            });
+        } else if (error?.error?.message) {
+            errorMessage = error.error.message;
+        } else {
+            errorMessage = 'Error desconocido. Contacte al administrador.';
+        }
+        this.showNotification(errorMessage, false);
     } finally {
-      this.isLoading = false;
-      this.changeDetector.detectChanges();
+        this.isLoading = false;
+        this.changeDetector.detectChanges();
     }
-  }
+}
+
   onDateChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.fecha = new Date(input.value);
