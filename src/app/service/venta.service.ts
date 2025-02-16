@@ -11,7 +11,7 @@ import { EstadoPedido } from '../models/estado_pedido';
   providedIn: 'root',
 })
 export class VentaService {
-  private apiUrl = 'https://api20250205164724.azurewebsites.net/';
+  private apiUrl = 'http://localhost:5229/';
 
   //http://localhost:5229/
 //https://api20250205164724.azurewebsites.net/

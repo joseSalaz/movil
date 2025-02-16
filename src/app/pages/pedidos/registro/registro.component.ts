@@ -4,6 +4,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { VentaService } from '../../../service/venta.service';
 import { EstadoPedidoImagene } from '../../../models/estado_pedido_imagene';
 import { firstValueFrom } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-registro',
@@ -289,6 +290,12 @@ export class RegistroComponent implements OnInit {
         console.log('Respuesta del servidor:', response);
         this.router.navigate(['/historial']);
         this.showNotification('Se agregó correctamente.', true);
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'El estado se actualizo correctamente',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
     } catch (error: any) {
         console.error('Error al actualizar:', error);
         let errorMessage = 'Ocurrió un error al actualizar: \n';
